@@ -15,6 +15,10 @@
 
 ```python3 ofer.py flood```
 
+### Что бы запустить HTTP/2 Rapid Reset (CVE-2023-44487)
+
+```python3 ofer.py rapid```
+
 Если аргумент не передан, используется режим по умолчанию — flood.
 
 
