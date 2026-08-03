@@ -1,4 +1,5 @@
 import asyncio
+import json
 import random
 import secrets
 import string
@@ -35,15 +36,17 @@ if len(sys.argv) > 1:
         MODE = requested_mode
 
 if MODE == "slow":
-    TOTAL_REQUESTS = 50000000000
-    DELAY_BETWEEN_REQ = 0.0001
-    MAX_CONCURRENT = 1000
-    JITTER = 0.001
+    TOTAL_REQUESTS = 500000000
+    DELAY_BETWEEN_REQ = 0.001
+    MAX_CONCURRENT = 1
+    JITTER = 0.0
+    BYTE_RATE_PER_SECOND = 1
 else:
-    TOTAL_REQUESTS = 20000000000
-    DELAY_BETWEEN_REQ = 0.0001
-    MAX_CONCURRENT = 1000
-    JITTER = 0.001
+    TOTAL_REQUESTS = 200
+    DELAY_BETWEEN_REQ = 0.01
+    MAX_CONCURRENT = 8
+    JITTER = 0.005
+    BYTE_RATE_PER_SECOND = None
 
 
 USER_AGENTS = [
@@ -119,28 +122,98 @@ async def worker(session, worker_id):
 
         try:
             start_time = time.time()
-            async with session.request(
-                check_cfg["method"],
-                check_cfg["url"],
-                json=payload,
-                timeout=5,
-                ssl=check_cfg["ssl"],
-            ) as response:
-                duration = time.time() - start_time
-                if response.status in (200, 201):
-                    print(
-                        f"[+] Запрос {current_request_num} (Воркер {worker_id}): Успешно"
-                        f" (Цель: {check_cfg['url']}, Метод: {check_cfg['method']}, Статус: {response.status}, Время: {duration:.3f}с)"
-                    )
-                    async with counter_lock:
-                        success_count += 1
-                else:
-                    print(
-                        f"[-] Запрос {current_request_num} (Воркер {worker_id}):"
-                        f" Сервер вернул код {response.status} для {check_cfg['url']}"
-                    )
-                    async with counter_lock:
-                        fail_count += 1
+            body = json.dumps(payload, ensure_ascii=False)
+
+            if MODE == "slow":
+
+                # Запоминаем время начала отправки всей последовательности байт
+                start_time = time.time()
+
+                # Используем сессию для удержания (переиспользования) соединения между запросами
+                async with aiohttp.ClientSession() as session:
+                    for idx, char in enumerate(body):
+                        chunk = char.encode("utf-8")
+                        
+                        try:
+                            async with session.request(
+                                check_cfg["method"],
+                                check_cfg["url"],
+                                data=chunk,
+                                timeout=5,
+                                ssl=check_cfg["ssl"],
+                            ) as response:
+                                duration = time.time() - start_time
+                                
+                                if response.status in (200, 201):
+                                    print(
+                                        f"[+] Запрос {current_request_num} (Воркер {worker_id}): Успешно"
+                                        f" (Цель: {check_cfg['url']}, Метод: {check_cfg['method']}, Статус: {response.status}, Время: {duration:.3f}с, байт {idx + 1})"
+                                    )
+                                    async with counter_lock:
+                                        success_count += 1
+                                else:
+                                    print(
+                                        f"[-] Запрос {current_request_num} (Воркер {worker_id}):"
+                                        f" Сервер вернул код {response.status} для {check_cfg['url']}"
+                                    )
+                                    async with counter_lock:
+                                        fail_count += 1
+                                        
+                        except Exception as e:
+                            print(f"[-] Ошибка соединения для воркера {worker_id}: {e}")
+                            async with counter_lock:
+                                fail_count += 1
+                                
+                        await asyncio.sleep(1.0 / BYTE_RATE_PER_SECOND)
+
+                for idx, char in enumerate(body):
+                    chunk = char.encode("utf-8")
+                    async with session.request(
+                        check_cfg["method"],
+                        check_cfg["url"],
+                        data=chunk,
+                        timeout=5,
+                        ssl=check_cfg["ssl"],
+                    ) as response:
+                        duration = time.time() - start_time
+                        if response.status in (200, 201):
+                            print(
+                                f"[+] Запрос {current_request_num} (Воркер {worker_id}): Успешно"
+                                f" (Цель: {check_cfg['url']}, Метод: {check_cfg['method']}, Статус: {response.status}, Время: {duration:.3f}с, байт {idx + 1})"
+                            )
+                            async with counter_lock:
+                                success_count += 1
+                        else:
+                            print(
+                                f"[-] Запрос {current_request_num} (Воркер {worker_id}):"
+                                f" Сервер вернул код {response.status} для {check_cfg['url']}"
+                            )
+                            async with counter_lock:
+                                fail_count += 1
+                    await asyncio.sleep(1.0 / BYTE_RATE_PER_SECOND)
+            else:
+                async with session.request(
+                    check_cfg["method"],
+                    check_cfg["url"],
+                    json=payload,
+                    timeout=5,
+                    ssl=check_cfg["ssl"],
+                ) as response:
+                    duration = time.time() - start_time
+                    if response.status in (200, 201):
+                        print(
+                            f"[+] Запрос {current_request_num} (Воркер {worker_id}): Успешно"
+                            f" (Цель: {check_cfg['url']}, Метод: {check_cfg['method']}, Статус: {response.status}, Время: {duration:.3f}с)"
+                        )
+                        async with counter_lock:
+                            success_count += 1
+                    else:
+                        print(
+                            f"[-] Запрос {current_request_num} (Воркер {worker_id}):"
+                            f" Сервер вернул код {response.status} для {check_cfg['url']}"
+                        )
+                        async with counter_lock:
+                            fail_count += 1
         except (aiohttp.ClientError, asyncio.TimeoutError) as e:
             print(
                 f"[!] Запрос {current_request_num} (Воркер {worker_id}): Ошибка соединения"
