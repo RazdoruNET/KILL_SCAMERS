@@ -98,7 +98,7 @@ async def worker(session, worker_id):
                 check_cfg["method"],
                 check_cfg["url"],
                 json=payload,
-                timeout=500,
+                timeout=5,
                 ssl=check_cfg["ssl"],
             ) as response:
                 duration = time.time() - start_time
@@ -132,7 +132,7 @@ async def main():
     print(f"[*] Целей для проверки: {len(CHECKS)}")
     print(f"[*] Всего запросов: {TOTAL_REQUESTS}, Одновременных воркеров: {MAX_CONCURRENT}\n")
 
-    connector = aiohttp.TCPConnector(use_dns_cache=True, ttl_dns_cache=300)
+    connector = aiohttp.TCPConnector(use_dns_cache=True, ttl_dns_cache=3)
 
     async with aiohttp.ClientSession(connector=connector) as session:
         workers = [
