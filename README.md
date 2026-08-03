@@ -28,7 +28,7 @@ docker build -t ofer-app .
 
 ## Запуск пачки контейнеров
 
-for i in {1..50}; do docker run -d --name "ofer_$i" --restart unless-stopped ofer-app; done
+for i in {1..5}; do docker run -d --name "ofer_$i" --restart unless-stopped ofer-app; done
 
 ## Запуск контейнеров через прокси
 
