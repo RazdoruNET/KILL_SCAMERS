@@ -43,9 +43,7 @@ NUM_PROXIES=${#PROXY_LIST[@]}
 ### Через разные прокси
 
 for i in {1..100}; do
-  # Берем прокси по очереди (циклически, если прокси меньше 100)
   CURRENT_PROXY=${PROXY_LIST[$(( (i-1) % NUM_PROXIES ))]}
-  
   docker run -d \
     --name "ofer_$i" \
     --restart unless-stopped \
