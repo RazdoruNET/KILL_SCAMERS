@@ -2,6 +2,7 @@ import asyncio
 import random
 import secrets
 import string
+import sys
 import time
 import uuid
 from datetime import datetime, timezone
@@ -27,6 +28,11 @@ CHECKS = [
 ]
 
 MODE = "flood"  # slow | flood
+
+if len(sys.argv) > 1:
+    requested_mode = sys.argv[1].strip().lower()
+    if requested_mode in {"slow", "flood"}:
+        MODE = requested_mode
 
 if MODE == "slow":
     TOTAL_REQUESTS = 50000000000
