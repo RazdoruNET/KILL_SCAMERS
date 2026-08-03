@@ -77,14 +77,14 @@ bashdocker run -d --name "ofer_1" --net ip_vlan_net --ip ВНЕШНИЙ_IP_1 ofe
 
 # Перетасовка через iptables (Балансировка)
 
-# Удаляем стандартное правило маскарадинга Docker для этой подсети, чтобы применить свое
+### Удаляем стандартное правило маскарадинга Docker для этой подсети, чтобы применить свое
 sudo iptables -t nat -D POSTROUTING -s 172.17.0.0/16 ! -o docker0 -j MASQUERADE 2>/dev/null
 
-# Каждый 3-й пакет отправляем через первый IP
+### Каждый 3-й пакет отправляем через первый IP
 sudo iptables -t nat -A POSTROUTING -s 172.17.0.0/16 ! -o docker0 -m statistic --mode nth --every 3 --packet 0 -j SNAT --to-source 1.1.1.1
 
-# Каждый 2-й из оставшихся пакетов отправляем через второй IP
+### Каждый 2-й из оставшихся пакетов отправляем через второй IP
 sudo iptables -t nat -A POSTROUTING -s 172.17.0.0/16 ! -o docker0 -m statistic --mode nth --every 2 --packet 0 -j SNAT --to-source 1.1.1.2
 
-# Все остальные пакеты отправляем через третий IP
+### Все остальные пакеты отправляем через третий IP
 sudo iptables -t nat -A POSTROUTING -s 172.17.0.0/16 ! -o docker0 -j SNAT --to-source 1.1.1.3
