@@ -24,3 +24,45 @@ docker build -t ofer-app .
 ## Запуск пачки контейнеров
 
 for i in {1..50}; do docker run -d --name "ofer_$i" --restart unless-stopped ofer-app; done
+
+## Запуск контейнеров через прокси
+
+### Через один прокси
+
+for i in {1..100}; do 
+  docker run -d \
+    --name "ofer_$i" \
+    --restart unless-stopped \
+    -e PROXY_URL="http://123.45.67" \
+    ofer-app
+done
+
+mapfile -t PROXY_LIST < proxies.txt
+NUM_PROXIES=${#PROXY_LIST[@]}
+
+### Через разные прокси
+
+for i in {1..100}; do
+  # Берем прокси по очереди (циклически, если прокси меньше 100)
+  CURRENT_PROXY=${PROXY_LIST[$(( (i-1) % NUM_PROXIES ))]}
+  
+  docker run -d \
+    --name "ofer_$i" \
+    --restart unless-stopped \
+    -e PROXY_URL="$CURRENT_PROXY" \
+    ofer-app
+done
+
+## Привязка контейнеров к IP через Macvlan/Ipvlan
+
+Создайте Docker-сеть типа ipvlan (она безопаснее и проще, чем macvlan, так как не генерирует лишние MAC-адреса):
+
+bashdocker network create -d ipvlan \
+  --subnet=ВНЕШНЯЯ_ПОДСЕТЬ_СЕРВЕРА/24 \
+  --gateway=ВНЕШНИЙ_ШЛЮЗ_ПРОВАЙДЕРА \
+  -o parent=eth0 ip_vlan_net
+
+При запуске контейнера жестко укажите ему один из ваших свободных внешних IP-адресов:
+
+bashdocker run -d --name "ofer_1" --net ip_vlan_net --ip ВНЕШНИЙ_IP_1 ofer-app
+
