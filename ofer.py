@@ -300,6 +300,12 @@ def get_next_target_index() -> int:
     return current_target
 
 
+def rotate_target() -> int:
+    global TARGET
+    TARGET = (TARGET + 1) % len(CHECKS)
+    return TARGET
+
+
 async def worker(session, worker_id):
     global request_counter, success_count, fail_count, TARGET
 
@@ -415,12 +421,13 @@ async def worker(session, worker_id):
                         async with counter_lock:
                             fail_count += 1
         except (aiohttp.ClientError, asyncio.TimeoutError) as e:
-            print(
-                f"[!] Запрос {current_request_num} (Воркер {worker_id}): Ошибка соединения"
-                f" ({e}) для {current_target}"
-            )
             async with counter_lock:
                 fail_count += 1
+                next_target = rotate_target()
+            print(
+                f"[!] Запрос {current_request_num} (Воркер {worker_id}): Ошибка соединения"
+                f" ({e}) для {current_target}. Смена цели -> {next_target}"
+            )
 
         sleep_for = DELAY_BETWEEN_REQ + random.uniform(0, JITTER)
         await asyncio.sleep(sleep_for)
