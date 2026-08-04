@@ -59,6 +59,16 @@ CHECKS = [
     ],[
         {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": False, "kind": "log_visit1"},
     ],[
+        {"url": "https://beldeklarant.by/container.svg", "method": "GET", "ssl": False, "kind": "container"},
+        {"url": "https://beldeklarant.by/bptp.svg", "method": "GET", "ssl": False, "kind": "bptp"},
+        {"url": "https://beldeklarant.by/bts.jpg", "method": "GET", "ssl": False, "kind": "bts"},
+        {"url": "https://beldeklarant.by/arrow.webp", "method": "GET", "ssl": False, "kind": "arrow"},
+        {"url": "https://beldeklarant.by/styles.css", "method": "GET", "ssl": False, "kind": "styles"},
+        {"url": "https://beldeklarant.by/script.js", "method": "GET", "ssl": False, "kind": "script"},
+        {"url": "https://beldeklarant.by/error.jpg", "method": "GET", "ssl": False, "kind": "errorjpg"},
+        {"url": "https://beldeklarant.by/ztk.svg", "method": "GET", "ssl": False, "kind": "ztk"},
+        {"url": "https://beldeklarant.by/rptto.svg", "method": "GET", "ssl": False, "kind": "rptto"},
+    ],[
         {"url": "https://beldeklarant.by/api/vehicles", "method": "GET", "ssl": False, "kind": "vehicles_list"},
     ]
 ]
