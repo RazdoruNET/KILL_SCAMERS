@@ -25,22 +25,31 @@ except ImportError:  # pragma: no cover - environment guard
 # Список проверок: эндпоинты из примера скрипта
 CHECKS = [
     [
-        {"url": "https://beldeklarant.by/api/vehicles?vin=W1K2060431R001488", "method": "GET", "ssl": True, "kind": "vehicles_vin"},
-        {"url": "https://beldeklarant.by/api/vehicles?vin=JTEBR3FJ20K191488", "method": "GET", "ssl": True, "kind": "vehicles_vin"},
+        {"url": "https://beldeklarant.by/api/vehicles?vin=W1K2060431R001488", "method": "GET", "ssl": False, "kind": "vehicles_vin"},
+        {"url": "https://beldeklarant.by/api/vehicles?vin=JTEBR3FJ20K191488", "method": "GET", "ssl": False, "kind": "vehicles_vin1"},
     ],[
-        {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True, "kind": "log_visit"},
-        {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True, "kind": "log_visit"},
-        {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True, "kind": "log_visit"},
-        {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True, "kind": "log_visit"},
-        {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True, "kind": "log_visit"},
-        {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True, "kind": "log_visit"},
-        {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True, "kind": "log_visit"},
-        {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True, "kind": "log_visit"},
-        {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True, "kind": "log_visit"},
-        {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": True, "kind": "log_visit"},
+        {"url": "https://beldeklarant.by/api/vehicles?vin=WMW41BR0303P12046", "method": "GET", "ssl": False, "kind": "vehicles_vin"},
+        {"url": "https://beldeklarant.by/api/vehicles?vin=WBAWZ510600M36817", "method": "GET", "ssl": False, "kind": "vehicles_vin1"},
+        {"url": "https://beldeklarant.by/api/vehicles?vin=JTME6RFV5RJ895216", "method": "GET", "ssl": False, "kind": "vehicles_vin"},
+        {"url": "https://beldeklarant.by/api/vehicles?vin=Z94C251BBJR012546", "method": "GET", "ssl": False, "kind": "vehicles_vin1"},
+        {"url": "https://beldeklarant.by/api/vehicles?vin=JMZKFGWMA00315072", "method": "GET", "ssl": False, "kind": "vehicles_vin"},
+        {"url": "https://beldeklarant.by/api/vehicles?vin=NMTK33BX10R240096", "method": "GET", "ssl": False, "kind": "vehicles_vin1"},
+        {"url": "https://beldeklarant.by/api/vehicles?vin=WVGZZZ5NZKM171297", "method": "GET", "ssl": False, "kind": "vehicles_vin"},
+        {"url": "https://beldeklarant.by/api/vehicles?vin=JHMRW2860KX212574", "method": "GET", "ssl": False, "kind": "vehicles_vin1"},
+        {"url": "https://beldeklarant.by/api/vehicles?vin=JTMW43FV90D082547", "method": "GET", "ssl": False, "kind": "vehicles_vin"},
+        {"url": "https://beldeklarant.by/api/vehicles?vin=JMZKE5W7AP0452546", "method": "GET", "ssl": False, "kind": "vehicles_vin1"},
+        {"url": "https://beldeklarant.by/api/vehicles?vin=VF1JL000X64372147", "method": "GET", "ssl": False, "kind": "vehicles_vin"},
+        {"url": "https://beldeklarant.by/api/vehicles?vin=TMAJ3812GJJ436125", "method": "GET", "ssl": False, "kind": "vehicles_vin1"},
+        {"url": "https://beldeklarant.by/api/vehicles?vin=KNARH81GDM5010456", "method": "GET", "ssl": False, "kind": "vehicles_vin"},
+        {"url": "https://beldeklarant.by/api/vehicles?vin=JM3KFBDM3P0201488", "method": "GET", "ssl": False, "kind": "vehicles_vin1"},
+        {"url": "https://beldeklarant.by/api/vehicles?vin=WDC1660241A561488", "method": "GET", "ssl": False, "kind": "vehicles_vin"},
+        {"url": "https://beldeklarant.by/api/vehicles?vin=JMBXTGK1WJZ028426", "method": "GET", "ssl": False, "kind": "vehicles_vin1"},
+        {"url": "https://beldeklarant.by/api/vehicles?vin=TMBJJ7NS2P8595463", "method": "GET", "ssl": False, "kind": "vehicles_vin"},
+        {"url": "https://beldeklarant.by/api/vehicles?vin=W1K2060431R001488", "method": "GET", "ssl": False, "kind": "vehicles_vin1"},
     ],[
-        {"url": "https://beldeklarant.by/api/vehicles", "method": "GET", "ssl": True, "kind": "vehicles_list"},
-        {"url": "https://beldeklarant.by/api/vehicles", "method": "GET", "ssl": True, "kind": "vehicles_list"},
+        {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": False, "kind": "log_visit1"},
+    ],[
+        {"url": "https://beldeklarant.by/api/vehicles", "method": "GET", "ssl": False, "kind": "vehicles_list"},
     ]
 ]
 
@@ -62,7 +71,7 @@ if MODE == "slow":
 elif MODE == "rapid":
     TOTAL_REQUESTS = 100000000
     DELAY_BETWEEN_REQ = 0.05
-    MAX_CONCURRENT = 10
+    MAX_CONCURRENT = 1
     JITTER = 0.0
     BYTE_RATE_PER_SECOND = None
 else:
