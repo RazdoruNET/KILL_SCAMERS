@@ -25,8 +25,8 @@ except ImportError:  # pragma: no cover - environment guard
 # Список проверок: эндпоинты из примера скрипта
 CHECKS = [
     [
-        {"url": "https://beldeklarant.by/api/vehicles?vin=W1K2060431R001488", "method": "GET", "ssl": False, "kind": "vehicles_vin"},
-        {"url": "https://beldeklarant.by/api/vehicles?vin=JTEBR3FJ20K191488", "method": "GET", "ssl": False, "kind": "vehicles_vin1"},
+        {"url": "https://beldeklarant.by/api/vehicles?vin=W1K2060431R001488", "method": "GET", "ssl": True, "kind": "vehicles_vin"},
+        {"url": "https://beldeklarant.by/api/vehicles?vin=JTEBR3FJ20K191488", "method": "GET", "ssl": True, "kind": "vehicles_vin1"},
     ],[
         {"url": "https://beldeklarant.by/api/vehicles?vin=WMW41BR0303P12046", "method": "GET", "ssl": False, "kind": "WMW41BR0303P12046"},
         {"url": "https://beldeklarant.by/api/vehicles?vin=WBAWZ510600M36817", "method": "GET", "ssl": False, "kind": "WBAWZ510600M36817"},
