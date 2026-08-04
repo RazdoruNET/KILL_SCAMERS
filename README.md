@@ -15,7 +15,7 @@
 
 ```python3 ofer.py flood```
 
-### Что бы запустить HTTP/2 Rapid Reset (CVE-2023-44487)
+### Что бы запустить HTTP/2 Rapid
 
 ```python3 ofer.py rapid```
 
