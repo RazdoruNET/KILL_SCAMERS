@@ -1,12 +1,25 @@
 #!/bin/bash
 
-cat << 'EOF' > proxies.txt
-85.142.254.32:1080
-213.213.210.44:1080
-EOF
+# ЗАБАНИТЬ АЙПИ РЕШИЛ ШУТНИК ))) ХОТЬ ОБЛОЖИСЬ БЛОКИРОВКАМИ ТУТ ТЫСЯЧИ IP И СПИСОК ОБНОВЛЯЕТСЯ КАЖДЫЕ 5 МИНУТ
+PROXY_URL="https://cdn.jsdelivr.net/gh/proxyscrape/free-proxy-list@main/proxies/all/data.txt" 
+PROXY_FILE="proxies.txt"
 
-mapfile -t PROXY_LIST < proxies.txt
+echo "Загружаем свежий список прокси из ProxyScrape..."
+
+if ! curl -sSf "$PROXY_URL" -o "$PROXY_FILE"; then
+    echo "Ошибка: Не удалось загрузить прокси список!"
+    exit 1
+fi
+
+mapfile -t PROXY_LIST < "$PROXY_FILE"
 NUM_PROXIES=${#PROXY_LIST[@]}
+
+if [ "$NUM_PROXIES" -eq 0 ]; then
+    echo "Ошибка: Список прокси пуст!"
+    exit 1
+fi
+
+echo "Успешно загружено $NUM_PROXIES прокси. Начинаем запуск контейнеров..."
 
 echo "Собираем образ... "
 docker build -t ofer-app-rapid .
