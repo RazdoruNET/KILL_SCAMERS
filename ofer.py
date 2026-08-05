@@ -22,6 +22,8 @@ except ImportError:  # pragma: no cover - environment guard
     h2_config = None
     ErrorCodes = None
 
+PROXY_SERVER = os.getenv("PROXY_URL") #ща докину остальную часть поддержки прокси
+
 # Список проверок: эндпоинты из примера скрипта
 CHECKS = [
     [
