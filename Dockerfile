@@ -4,6 +4,7 @@ WORKDIR /app
 
 RUN pip install --no-cache-dir aiohttp
 RUN pip install --no-cache-dir h2
+RUN pip install --no-cache-dir aiohttp-socks
 
 COPY ofer.py .
 
