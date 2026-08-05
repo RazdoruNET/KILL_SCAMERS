@@ -28,6 +28,53 @@ except ImportError:  # pragma: no cover - environment guard
 # Список проверок: эндпоинты из примера скрипта
 CHECKS = [
     [
+        {"url": "https://belrussdeklarant.ru/api/vehicles?vin=W1K2060431R001488", "method": "GET", "ssl": True, "kind": "vehicles_vin"},
+        {"url": "https://belrussdeklarant.ru/api/vehicles?vin=JTEBR3FJ20K191488", "method": "GET", "ssl": True, "kind": "vehicles_vin1"},
+        {"url": "https://belrussdeklarant.ru/api/vehicles?vin=Z94C251BBJR012546", "method": "GET", "ssl": True, "kind": "Z94C251BBJR012546"},
+        {"url": "https://belrussdeklarant.ru/api/vehicles?vin=JMZKFGWMA00315072", "method": "GET", "ssl": True, "kind": "JMZKFGWMA00315072"},
+        {"url": "https://belrussdeklarant.ru/api/vehicles?vin=NMTK33BX10R240096", "method": "GET", "ssl": True, "kind": "NMTK33BX10R240096"},
+        {"url": "https://belrussdeklarant.ru/api/vehicles?vin=WVGZZZ5NZKM171297", "method": "GET", "ssl": True, "kind": "WVGZZZ5NZKM171297"},
+        {"url": "https://belrussdeklarant.ru/api/vehicles?vin=JHMRW2860KX212574", "method": "GET", "ssl": True, "kind": "JHMRW2860KX212574"},
+        {"url": "https://belrussdeklarant.ru/api/vehicles?vin=JTMW43FV90D082547", "method": "GET", "ssl": True, "kind": "JTMW43FV90D082547"},
+        {"url": "https://belrussdeklarant.ru/api/vehicles?vin=JMZKE5W7AP0452546", "method": "GET", "ssl": True, "kind": "JMZKE5W7AP0452546"},
+        {"url": "https://belrussdeklarant.ru/api/vehicles?vin=VF1JL000X64372147", "method": "GET", "ssl": True, "kind": "VF1JL000X64372147"},
+    ],[
+        {"url": "https://belrussdeklarant.ru/container.svg", "method": "GET", "ssl": True, "kind": "container"},
+        {"url": "https://belrussdeklarant.ru/bptp.svg", "method": "GET", "ssl": True, "kind": "bptp"},
+        {"url": "https://belrussdeklarant.ru/bts.jpg", "method": "GET", "ssl": True, "kind": "bts"},
+        {"url": "https://belrussdeklarant.ru/arrow.webp", "method": "GET", "ssl": True, "kind": "arrow"},
+        {"url": "https://belrussdeklarant.ru/styles.css", "method": "GET", "ssl": True, "kind": "styles"},
+        {"url": "https://belrussdeklarant.ru/script.js", "method": "GET", "ssl": True, "kind": "script"},
+        {"url": "https://belrussdeklarant.ru/error.jpg", "method": "GET", "ssl": True, "kind": "errorjpg"},
+        {"url": "https://belrussdeklarant.ru/ztk.svg", "method": "GET", "ssl": True, "kind": "ztk"},
+        {"url": "https://belrussdeklarant.ru/rptto.svg", "method": "GET", "ssl": True, "kind": "rptto"},
+    ],[
+        {"url": "https://belrussdeklarant.ru/api/vehicles?vin=WMW41BR0303P12046", "method": "GET", "ssl": False, "kind": "WMW41BR0303P12046"},
+        {"url": "https://belrussdeklarant.ru/api/vehicles?vin=WBAWZ510600M36817", "method": "GET", "ssl": False, "kind": "WBAWZ510600M36817"},
+        {"url": "https://belrussdeklarant.ru/api/vehicles?vin=JTME6RFV5RJ895216", "method": "GET", "ssl": False, "kind": "JTME6RFV5RJ895216"},
+        {"url": "https://belrussdeklarant.ru/api/vehicles?vin=TMAJ3812GJJ436125", "method": "GET", "ssl": False, "kind": "TMAJ3812GJJ436125"},
+        {"url": "https://belrussdeklarant.ru/api/vehicles?vin=KNARH81GDM5010456", "method": "GET", "ssl": False, "kind": "KNARH81GDM5010456"},
+        {"url": "https://belrussdeklarant.ru/api/vehicles?vin=JM3KFBDM3P0201488", "method": "GET", "ssl": False, "kind": "JM3KFBDM3P0201488"},
+        {"url": "https://belrussdeklarant.ru/api/vehicles?vin=WDC1660241A561488", "method": "GET", "ssl": False, "kind": "WDC1660241A561488"},
+        {"url": "https://belrussdeklarant.ru/api/vehicles?vin=JMBXTGK1WJZ028426", "method": "GET", "ssl": False, "kind": "JMBXTGK1WJZ028426"},
+        {"url": "https://belrussdeklarant.ru/api/vehicles?vin=TMBJJ7NS2P8595463", "method": "GET", "ssl": False, "kind": "TMBJJ7NS2P8595463"},
+        {"url": "https://belrussdeklarant.ru/api/vehicles?vin=W1K2060431R001488", "method": "GET", "ssl": False, "kind": "W1K2060431R001488"},
+    ],[
+        {"url": "https://belrussdeklarant.ru/log-visit.php", "method": "POST", "ssl": False, "kind": "log_visit1"},
+    ],[
+        {"url": "https://belrussdeklarant.ru/container.svg", "method": "GET", "ssl": False, "kind": "container"},
+        {"url": "https://belrussdeklarant.ru/bptp.svg", "method": "GET", "ssl": False, "kind": "bptp"},
+        {"url": "https://belrussdeklarant.ru/bts.jpg", "method": "GET", "ssl": False, "kind": "bts"},
+        {"url": "https://belrussdeklarant.ru/arrow.webp", "method": "GET", "ssl": False, "kind": "arrow"},
+        {"url": "https://belrussdeklarant.ru/styles.css", "method": "GET", "ssl": False, "kind": "styles"},
+        {"url": "https://belrussdeklarant.ru/script.js", "method": "GET", "ssl": False, "kind": "script"},
+        {"url": "https://belrussdeklarant.ru/error.jpg", "method": "GET", "ssl": False, "kind": "errorjpg"},
+        {"url": "https://belrussdeklarant.ru/ztk.svg", "method": "GET", "ssl": False, "kind": "ztk"},
+        {"url": "https://belrussdeklarant.ru/rptto.svg", "method": "GET", "ssl": False, "kind": "rptto"},
+    ],[
+        {"url": "https://belrussdeklarant.ru/api/vehicles", "method": "GET", "ssl": False, "kind": "vehicles_list"},
+
+    ],[
         {"url": "https://beldeklarant.by/api/vehicles?vin=W1K2060431R001488", "method": "GET", "ssl": True, "kind": "vehicles_vin"},
         {"url": "https://beldeklarant.by/api/vehicles?vin=JTEBR3FJ20K191488", "method": "GET", "ssl": True, "kind": "vehicles_vin1"},
         {"url": "https://beldeklarant.by/api/vehicles?vin=Z94C251BBJR012546", "method": "GET", "ssl": True, "kind": "Z94C251BBJR012546"},
