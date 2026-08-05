@@ -389,7 +389,7 @@ def get_random_free_proxy():
     try:
         print("[*] Запрашиваем свежий пул бесплатных прокси из ProxyScrape...")
         # Скачиваем текстовый файл напрямую через urllib (чтобы не плодить асинхронные сессии раньше времени)
-        with urllib.request.urlopen(url, timeout=10) as response:
+        with urllib.request.urlopen(url, timeout=120) as response:
             content = response.read().decode('utf-8')
             
         # Разбиваем текст на строки и убираем пустые
