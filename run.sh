@@ -1,6 +1,9 @@
 #!/bin/bash
 
 # ЗАБАНИТЬ АЙПИ РЕШИЛ ШУТНИК ))) ХОТЬ ОБЛОЖИСЬ БЛОКИРОВКАМИ ТУТ ТЫСЯЧИ IP И СПИСОК ОБНОВЛЯЕТСЯ КАЖДЫЕ 5 МИНУТ
+# Я ЕЩЕ ДЛЯ СЕБЯ ЛИЧНО СЮДА 3-4 ИСТОЧНИКА ВНЕСУ ТАКИХЖЕ ))))
+# ДА ЕЩЕ ЖДИ АТАКИ ЧЕРЕЗ ТОР СОЕДИНЕНИЯ 
+
 PROXY_URL="https://cdn.jsdelivr.net/gh/proxyscrape/free-proxy-list@main/proxies/all/data.txt" 
 PROXY_FILE="proxies.txt"
 
