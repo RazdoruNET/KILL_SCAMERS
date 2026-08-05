@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir aiohttp-socks
 
 COPY ofer.py .
 
-ENTRYPOINT ["python3", "ofer.py", "slow proxy"]
+ENTRYPOINT ["python3", "ofer.py", "flood proxy"]
