@@ -383,28 +383,101 @@ async def worker(session, worker_id):
         sleep_for = DELAY_BETWEEN_REQ + random.uniform(0, JITTER)
         await asyncio.sleep(sleep_for)
 
-def get_random_free_proxy():
-    """Скачивает свежий список прокси из ProxyScrape и возвращает один случайный IP:PORT"""
-    url = "https://jsdelivr.net"
-    try:
-        print("[*] Запрашиваем свежий пул бесплатных прокси из ProxyScrape...")
-        # Скачиваем текстовый файл напрямую через urllib (чтобы не плодить асинхронные сессии раньше времени)
-        with urllib.request.urlopen(url, timeout=120) as response:
-            content = response.read().decode('utf-8')
+   # url = "https://cdn.jsdelivr.net/gh/proxyscrape/free-proxy-list@main/proxies/all/data.txt"
+
+class ProxyPool:
+    def __init__(self):
+        self.proxies = []
+        self.lock = asyncio.Lock()
+        self.is_enabled = False
+
+    async def update_loop(self):
+        """Фоновый цикл: обновляет список прокси каждые 7 минут"""
+        urls = [
+            "https://cdn.jsdelivr.net/gh/proxyscrape/free-proxy-list@main/proxies/all/data.txt",
+            "https://raw.githubusercontent.com/komutan234/Proxy-List-Free/main/proxies/http.txt",
+            "https://raw.githubusercontent.com/komutan234/Proxy-List-Free/main/proxies/socks5.txt"
+        ]
+        while True:
+            for url in urls:
+                try:
+                    # Скачиваем пул асинхронно через run_in_executor, чтобы не блочить воркеры
+                    loop = asyncio.get_running_loop()
+                    def fetch():
+                        with urllib.request.urlopen(url, timeout=15) as r:
+                            return r.read().decode('utf-8')
+                    
+                    content = await loop.run_in_executor(None, fetch)
+                    new_proxies = [line.strip() for line in content.splitlines() if line.strip()]
+                    
+                    if new_proxies:
+                        async with self.lock:
+                            self.proxies = new_proxies
+                        print(f"\n[🔄 Пул обновлен] Загружено {len(self.proxies)} свежих прокси из внешнего источника.\n")
+                        break
+                except Exception as e:
+                    print(f"[!] Ошибка обновления пула из {url.split('/')[2]}: {e}")
+                    continue
             
-        # Разбиваем текст на строки и убираем пустые
-        proxies = [line.strip() for line in content.splitlines() if line.strip()]
-        
-        if proxies:
-            selected = random.choice(proxies)
-            print(f"[+] Успешно получен случайный прокси из пула ({len(proxies)} шт.): {selected}")
-            return selected
-        else:
-            print("[!] Список прокси оказался пустым!")
+            await asyncio.sleep(420)  # 7 минут до следующего обновления
+
+    async def get_proxy(self):
+        """Выдает случайный прокси из пула"""
+        async with self.lock:
+            if self.proxies:
+                return random.choice(self.proxies)
             return None
-    except Exception as e:
-        print(f"[!] Не удалось автоматически загрузить прокси: {e}")
-        return None
+
+    async def remove_proxy(self, proxy):
+        """Удаляет тухлый прокси из актуального списка"""
+        async with self.lock:
+            if proxy in self.proxies:
+                self.proxies.remove(proxy)
+                print(f"[❌ Удален тухлый прокси] Осталось в пуле: {len(self.proxies)}")
+
+# Инициализируем глобальный пул
+PROXY_POOL = ProxyPool()
+
+async def worker(worker_id):
+    """Каждый воркер сам управляет своей сессией и своим прокси"""
+    print(f"[*] Воркер {worker_id} запущен.")
+    
+    while True:
+        # 1. Получаем индивидуальный прокси для текущего круга запросов
+        current_proxy = await PROXY_POOL.get_proxy() if PROXY_POOL.is_enabled else None
+        
+        if current_proxy:
+            proxy_url = current_proxy if "://" in current_proxy else f"http://{current_proxy}"
+            connector = ProxyConnector.from_url(proxy_url, use_dns_cache=True, ttl_dns_cache=3)
+        else:
+            connector = aiohttp.TCPConnector(use_dns_cache=True, ttl_dns_cache=3)
+
+        # 2. Открываем сессию под конкретный прокси (или напрямую)
+        # ВАЖНО: Добавлен глобальный timeout на сессию, чтобы бесплатные прокси не вешали воркер
+        timeout = aiohttp.ClientTimeout(total=10) 
+        async with aiohttp.ClientSession(connector=connector, timeout=timeout) as session:
+            try:
+                # --- ВАШ ТЕКУЩИЙ КОД ЗАПРОСА ВНУТРИ ВОРКЕРА ---
+                url = "https://httpbin.org"
+                async with session.get(url) as response:
+                     if response.status == 204: ...
+                
+                # Если запрос прошел успешно (даже если статус 204 или 200) - выходим из сессии и делаем следующий круг
+                pass 
+                
+            except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+                # 3. Если прокси тухлый (таймаут, отказ в соединении, ошибки протокола)
+                if current_proxy:
+                    # Удаляем его из пула, чтобы другие воркеры его больше не брали
+                    await PROXY_POOL.remove_proxy(current_proxy)
+                
+                # Небольшая пауза перед перезапуском воркера с новым прокси
+                await asyncio.sleep(1)
+                continue 
+            except Exception as e:
+                # Для всех остальных непредвиденных ошибок кода
+                await asyncio.sleep(1)
+                continue
 
 async def main():
     print("[*] Запуск асинхронного теста")
@@ -412,42 +485,27 @@ async def main():
     print(f"[*] Целей для проверки: {len(CHECKS)}")
     print(f"[*] Всего запросов: {TOTAL_REQUESTS}, Одновременных воркеров: {MAX_CONCURRENT}\n")
     
-    proxy_raw = None
-    proxy_source = ""
-
-    # 1. Приоритет 1: Ищем готовый адрес в переменных окружения Docker
+    # Проверяем условия включения прокси
     if os.getenv("PROXY_URL"):
-        proxy_raw = os.getenv("PROXY_URL")
-        proxy_source = "Окружение (Docker)"
-
-    # 2. Приоритет 2: Если в ENV пусто, но в аргументах передано именно слово "proxy"
+        # Если прокси пришел жестко из Docker, забиваем его единственным в пул
+        PROXY_POOL.proxies = [os.getenv("PROXY_URL")]
+        PROXY_POOL.is_enabled = True
+        print("[*] Используется фиксированный прокси из Docker окружения.")
     elif len(sys.argv) >= 3 and sys.argv[2].lower() == "proxy":
-        proxy_source = "Авто-подгрузка (маркер 'proxy')"
-        proxy_raw = get_random_free_proxy()
+        PROXY_POOL.is_enabled = True
+        # Запускаем фоновую задачу обновления пула
+        asyncio.create_task(PROXY_POOL.update_loop())
+        print("[*] Включен режим динамического пула прокси. Ожидание первой загрузки...")
+        # Ждем 5 секунд, чтобы пул успел загрузить первые прокси перед стартом воркеров
+        while not PROXY_POOL.proxies:
+            await asyncio.sleep(1)
 
-    # 3. Инициализируем коннектор
-    if not proxy_raw:
-        print("[*] Работаем НАПРЯМУЮ без прокси.")
-        connector = aiohttp.TCPConnector(use_dns_cache=True, ttl_dns_cache=3)
-    else:
-        # Форматируем строку (добавляем http:// для чистых IP:PORT)
-        proxy_url = proxy_raw if "://" in proxy_raw else f"http://{proxy_raw}"
-        print(f"[*] Источник: {proxy_source}")
-        print(f"[*] Все воркеры используют адрес: {proxy_url}")
-        
-        connector = ProxyConnector.from_url(
-            proxy_url,
-            use_dns_cache=True,
-            ttl_dns_cache=3
-        )
-
-    # 4. Запуск сессии и воркеров (без изменений)
-    async with aiohttp.ClientSession(connector=connector) as session:
-        workers = [
-            asyncio.create_task(worker(session, worker_id))
-            for worker_id in range(1, MAX_CONCURRENT + 1)
-        ]
-        await asyncio.gather(*workers)
+    # Запускаем воркеров (теперь без передачи глобальной session)
+    workers = [
+        asyncio.create_task(worker(worker_id))
+        for worker_id in range(1, MAX_CONCURRENT + 1)
+    ]
+    await asyncio.gather(*workers)
 
     print("\n--- Итоги тестирования ---")
     print(f"Успешных запросов: {success_count}")
