@@ -5,6 +5,7 @@ WORKDIR /app
 RUN pip install --no-cache-dir aiohttp
 RUN pip install --no-cache-dir h2
 RUN pip install --no-cache-dir aiohttp-socks
+RUN pip install --no-cache-dir fake_useragent
 
 COPY ofer.py .
 
