@@ -7,6 +7,6 @@ RUN pip install --no-cache-dir h2
 RUN pip install --no-cache-dir aiohttp-socks
 RUN pip install --no-cache-dir fake_useragent
 
-COPY ofer.py .
+COPY zapros.py .
 
 ENTRYPOINT ["python3", "zapros.py", "proxy"]
