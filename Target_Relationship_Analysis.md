@@ -1,140 +1,122 @@
-# Target Relationship Analysis: beldeklarant.by and avto-trak.com
+# Анализ взаимосвязи целевых доменов: beldeklarant.by и avto-trak.com
 
-## Executive Summary
-**CONCLUSION: DIRECT INFRASTRUCTURE RELATIONSHIP CONFIRMED**
+## Краткое изложение
+**ВЫВОД: ПОДТВЕРЖДЕНА ПРЯМАЯ ИНФРАСТРУКТУРНАЯ СВЯЗЬ**
 
-Both domains are hosted on the same hosting provider (Hostinger International Limited) in the same data center location (Vilnius, Lithuania) with sequential server IDs, indicating they are part of the same hosting infrastructure deployment.
+Оба домена размещены у одного и того же хостинг-провайдера (Hostinger International Limited) в одном и том же центре обработки данных (Вильнюс, Литва) с последовательными идентификаторами серверов, что указывает на то, что они являются частью одной и той же инфраструктуры хостинга.
 
-## Detailed Findings
 
-### 1. Infrastructure Analysis
+## Подробные результаты
 
-#### Shared Hosting Provider
-- **beldeklarant.by**: Hosted on IP 31.97.72.200
-- **avto-trak.com**: Hosted on IP 2.24.161.38
-- **Both**: Hosted by Hostinger International Limited (AS47583)
-- **Location**: Vilnius, Lithuania (54.6892, 25.2798)
-- **Sequential Server IDs**: srv1790591.hstgr.cloud and srv1790595.hstgr.cloud
+### 1. Анализ инфраструктуры
 
-#### DNS Configuration
-- **beldeklarant.by DNS**: a1.domain.by, a2.domain.by (Belarusian DNS provider)
-- **avto-trak.com DNS**: ns1.reg.ru, ns2.reg.ru (Russian DNS provider REG.RU)
+#### Провайдер общего хостинга
+- **beldeklarant.by**: размещен на IP-адресе 31.97.72.200
+- **avto-trak.com**: размещен на IP-адресе 2.24.161.38
+- **Оба**: размещены компанией Hostinger International Limited (AS47583)
+- **Местоположение**: Вильнюс, Литва (54.6892, 25.2798)
+- **Последовательные идентификаторы серверов**: srv1790591.hstgr.cloud и srv1790595.hstgr.cloud
 
-### 2. Domain Registration
+#### Конфигурация DNS
+- **DNS для **beldeklarant.by**: a1.domain.by, a2.domain.by (Белорусский DNS-провайдер)
+- **DNS avto-trak.com**: ns1.reg.ru, ns2.reg.ru (российский DNS-провайдер REG.RU)
+
+### 2. Регистрация домена
 
 #### beldeklarant.by
-- **TLD**: .by (Belarus)
-- **Status**: Currently unreachable (connection refused on port 443)
-- **DNS Provider**: domain.by (Belarusian hosting provider)
+- **TLD**: .by (Беларусь)
+- **Статус**: В настоящее время недоступен (соединение отклонено на порту 443)
+- **DNS-провайдер**: domain.by (белорусский хостинг-провайдер)
 
 #### avto-trak.com
-- **TLD**: .com (International)
-- **Status**: Active and accessible
-- **Registration**: Created 2026-05-30, Expires 2027-05-30
-- **Registrar**: REG.RU LLC (Russian registrar)
-- **Contact Email**: workmail88123@gmail.com
-- **Phone**: +7.9019602630
-- **Business Info**: ООО «Автотрак» - automotive services from Saratov, Russia
-- **Address**: 410028, Саратовская область, г. Саратов, ул. Им Чернышевского Н.Г., д. 153, офис 1204
+- **TLD**: .com (Международный)
+- **Статус**: Активен и доступен
+- **Регистрация**: Создана 30.05.2026, истекает 30.05.2027
+- **Регистратор**: ООО REG.RU (российский регистратор)
+- **Контактный адрес электронной почты**: workmail88123@gmail.com
+- **Телефон**: +7.9019602630
+- **Информация для бизнеса**: ООО «Автотрак» - автосервисы из Саратова, Россия
+- **Адрес**: 410028, Саратовская область, г. Алматы. Саратов, ул. Им Чернышевского Н.Г., д. 153, офис 1204
 
-### 3. Web Content Analysis
+### 3. Анализ веб-контента
 
-#### avto-trak.com Content
-- **Business Type**: Automobile import/delivery service from Europe
-- **Company**: ООО «Автотрак»
-- **Services**: Vehicle selection, purchase, and delivery from Europe under turnkey contracts
-- **Contact**: avtotrak.saratov@gmail.com, +7 (495) 185-63-73
-- **Technology Stack**: Next.js, nginx/1.24.0 (Ubuntu)
-- **Location**: Saratov, Russia
+#### Контент avto-trak.com
+- **Тип бизнеса**: Услуги по импорту/доставке автомобилей из Европы
+- **Компания**: ООО «Автотрак»
+- **Услуги**: Подбор, покупка и доставка автомобилей из Европы по договорам «под ключ»
+- **Контакты**: avtotrak.saratov@gmail.com, +7 (495) 185-63-73
+- **Технологический стек**: Next.js, nginx/1.24.0 (Ubuntu)
+- **Местоположение**: Саратов, Россия
 
-#### Cross-Reference Check
-- No direct references to beldeklarant.by found in avto-trak.com content
-- No shared phone numbers or email addresses identified
-- Different business focuses (beldeklarant.by appears to be Belarusian, avto-trak.com is Russian)
+#### Проверка перекрестных ссылок
+- В контенте avto-trak.com не найдено прямых ссылок на beldeklarant.by
+- Не обнаружено общих телефонных номеров или адресов электронной почты
+- Разные направления бизнеса (beldeklarant.by, по-видимому, белорусский, avto-trak.com — белорусский) (Русский)
 
-### 4. SSL Certificates
+### 4. SSL-сертификаты
 
 #### avto-trak.com
-- **Issuer**: Let's Encrypt (YE1)
-- **Valid**: Jul 7 11:40:11 2026 GMT to Oct 5 11:40:10 2026 GMT
-- **Subject**: CN=avto-trak.com
+- **Эмитент**: Let's Encrypt (YE1)
+- **Действителен**: с 7 июля 2026 г., 11:40:11 GMT, по 5 октября 2026 г., 11:40:10 GMT
+- **Субъект**: CN=avto-trak.com
 - **SAN**: DNS:avto-trak.com, DNS:www.avto-trak.com
 
 #### beldeklarant.by
-- **Status**: Unable to retrieve (service unreachable)
+- **Статус**: Невозможно получить (сервис недоступен)
 
-### 5. Technical Correlation
+### 5. Техническая корреляция
 
-#### Hosting Infrastructure
-- **Critical Finding**: Both domains hosted on Hostinger infrastructure
-- **Server Pattern**: Sequential server IDs (srv1790591, srv1790595) suggest:
-  - Same hosting account/customer
-  - Deployed around the same time
-  - Part of same infrastructure project
+#### Хостинговая инфраструктура
+- **Критическая находка**: Оба домена размещены на инфраструктуре Hostinger
+- **Шаблон сервера**: Последовательные идентификаторы серверов (srv1790591, (srv1790595) предполагает:
 
-#### Geographic Correlation
-- **Physical Location**: Both servers in Vilnius, Lithuania
-- **Network Provider**: Same AS (AS47583 - Hostinger International Limited)
-- **Timezone**: Europe/Vilnius
+- Один и тот же хостинг-аккаунт/клиент
+- Развертывание примерно в одно и то же время
 
-## Relationship Assessment
+- Часть одного и того же инфраструктурного проекта
 
-### High-Confidence Indicators
-1. **Shared Hosting Provider**: Both use Hostinger International Limited
-2. **Same Data Center**: Located in Vilnius, Lithuania
-3. **Sequential Server IDs**: srv1790591 and srv1790595 indicate same deployment batch
-4. **Infrastructure Pattern**: Typical of multi-domain hosting or related projects
+#### Географическая корреляция
+- **Физическое местоположение**: Оба сервера находятся в Вильнюсе, Литва
+- **Сетевой провайдер**: Одна и та же AS (AS47583 - Hostinger International Limited)
+- **Часовой пояс**: Европа/Вильнюс
 
-### Moderate-Confidence Indicators
-1. **Regional Similarity**: Both serve Russian-speaking markets (Belarus/Russia)
-2. **Business Timeline**: Both appear to be relatively new deployments (2026)
-3. **Technical Stack**: Both use modern web technologies
+## Оценка взаимосвязи
 
-### Low-Confidence Indicators
-1. **Different DNS Providers**: domain.by vs reg.ru
-2. **Different Registrars**: Belarusian vs Russian
-3. **No Direct Content References**: No cross-linking found
-4. **Different Business Models**: Cannot confirm operational relationship
+### Индикаторы высокой достоверности
+1. **Провайдер общего хостинга**: Оба используют Hostinger International Limited
+2. **Один и тот же дата-центр**: Расположен в Вильнюсе, Литва
+3. **Последовательные идентификаторы серверов**: srv1790591 и srv1790595 указывают на одну и ту же партию развертывания
+4. **Структура инфраструктуры**: Типична для многодоменного хостинга или подобных проектов
 
-## Conclusion
+### Индикаторы средней достоверности
+1. **Региональное сходство**: Оба обслуживают русскоязычные рынки (Беларусь/Россия)
+2. **Хронология развития бизнеса**: Оба, по-видимому, относительно новые (2026 год)
+3. **Технический стек**: Оба используют современные веб-технологии
 
-**CONFIRMED RELATIONSHIP**: Infrastructure-level relationship between beldeklarant.by and avto-trak.com
+### Индикаторы низкой достоверности
+1. **Разные DNS-провайдеры**: domain.by против reg.ru
+2. **Разные регистраторы**: белорусский против российского
+3. **Отсутствие прямых ссылок на контент**: Перекрестные ссылки не обнаружены
+4. **Разные бизнес-модели**: Невозможно подтвердить операционную связь
 
-The evidence strongly suggests that both domains are hosted on the same Hostinger infrastructure, likely under the same hosting account or customer deployment. The sequential server IDs (srv1790591 and srv1790595) are particularly telling, as they indicate the servers were provisioned as part of the same batch or project.
+## Заключение
 
-However, this infrastructure relationship does not necessarily indicate:
-- Common ownership
-- Business partnership
-- Operational connection
-- Shared management
+**ПОДТВЕРЖДЕННАЯ СВЯЗЬ**: Связь на уровне инфраструктуры между beldeklarant.by и avto-trak.com
 
-The domains appear to serve different markets (Belarus vs Russia) and have different business purposes, suggesting they may be:
-- Owned by the same entity/entity group with regional operations
-- Managed by the same technical team/agency
-- Part of a larger business network with shared infrastructure
+Имеющиеся данные убедительно свидетельствуют о том, что оба домена размещены на одной и той же инфраструктуре Hostinger, вероятно, под одной и той же учетной записью хостинга или в рамках одного и того же развертывания у клиента. Последовательные идентификаторы серверов (srv1790591 и srv1790595) особенно показательны, поскольку указывают на то, что серверы были выделены в рамках одной партии или проекта.
 
-## Recommendations
+Однако такая инфраструктурная связь не обязательно означает:
+- Общее владение
+- Деловое партнерство
+- Оперативное соединение
+- Совместное управление
 
-1. **Further Investigation**: Monitor both domains for content changes or cross-references
-2. **Infrastructure Monitoring**: Track any changes to hosting arrangements
-3. **Business Intelligence**: Investigate corporate registration data for both entities
-4. **Security Assessment**: Consider shared infrastructure risks if one domain is compromised
+Домены, по-видимому, обслуживают разные рынки (Беларусь против России) и имеют разные бизнес-цели, что позволяет предположить, что они могут быть:
+- Принадлежать одной и той же организации/группе организаций с региональными операциями
+- Управляться одной и той же технической командой/агентством
+- Частью более крупной бизнес-сети с общей инфраструктурой
 
-## Technical Details
+## Рекомендации
 
-### Network Information
-- **beldeklarant.by**: 31.97.72.200 (Hostinger, Vilnius)
-- **avto-trak.com**: 2.24.161.38 (Hostinger, Vilnius)
-- **ASN**: AS47583 (Hostinger International Limited)
-
-### Domain Information
-- **beldeklarant.by**: .by TLD, DNS: domain.by
-- **avto-trak.com**: .com TLD, DNS: reg.ru, Created: 2026-05-30
-
-### Status Assessment
-- **beldeklarant.by**: Currently unreachable (potential downtime or blocking)
-- **avto-trak.com**: Fully operational with active business presence
-
----
-*Analysis Date: 2026-08-09*
-*Analysis Method: Multi-factor technical and business intelligence correlation*
+1. **Дальнейшее расследование**: Мониторинг обоих доменов на предмет изменений контента или перекрестных ссылок
+2. **Мониторинг инфраструктуры**:
