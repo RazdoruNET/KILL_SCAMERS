@@ -155,7 +155,7 @@ async def main():
         PROXY_POOL.proxies = [os.getenv("PROXY_URL")]
         PROXY_POOL.is_enabled = True
         print("[*] Используется фиксированный прокси из Docker окружения.")
-    elif len(sys.argv) >= 1 and sys.argv[1].lower() == "proxy":
+    elif len(sys.argv) > 1 and sys.argv[1].lower() == "proxy":
         PROXY_POOL.is_enabled = True
         asyncio.create_task(PROXY_POOL.update_loop())
         print("[*] Включен режим динамического пула прокси. Ожидание первой загрузки...")        
