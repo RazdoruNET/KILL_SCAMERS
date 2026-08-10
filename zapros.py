@@ -22,8 +22,8 @@ from aiohttp_socks import ProxyConnector
 TARGET_URL = "https://avto-trak.com/api/leads" 
 
 TOTAL_REQUESTS = 500000000000       # Общее количество запросов
-DELAY_BETWEEN_REQ = 5      # Пауза перед отправкой следующего запроса в рамках воркера
-MAX_CONCURRENT = 25     # Количество параллельных воркеров (потоков)
+DELAY_BETWEEN_REQ = 1      # Пауза перед отправкой следующего запроса в рамках воркера
+MAX_CONCURRENT = 30     # Количество параллельных воркеров (потоков)
 
 init(autoreset=True)
 
@@ -44,7 +44,7 @@ fail_count = 0
 counter_lock = asyncio.Lock()
 file_lock = asyncio.Lock()
 
-send_semaphore = asyncio.Semaphore(8)
+send_semaphore = asyncio.Semaphore(200)
 
 class ProxyPool:
     def __init__(self):
@@ -94,7 +94,6 @@ class ProxyPool:
         async with self.lock:
             if proxy in self.proxies:
                 self.proxies.remove(proxy)
-                print(f"[❌ Удален тухлый прокси] Осталось в пуле: {len(self.proxies)}")
 
 
 PROXY_POOL = ProxyPool()
