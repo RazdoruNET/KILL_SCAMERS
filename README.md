@@ -14,3 +14,6 @@
 
 * **ОСИНТ-расследование:** [Деанон создателя на базе найденной связи с доменом и утекшим войсам](https://github.com/RazdoruNET/KILL_SCAMERS/blob/main/OSINT.md)
 * **Технический анализ:** [Описание связей между доменами](https://github.com/RazdoruNET/KILL_SCAMERS/blob/main/Target_Relationship_Analysis.md)
+
+
+PS: Что бы ты знал 1786354159805.d89135f26cc69279861695090350fd52f0a332ff180df8eebe1624aa69f3fa74 это токен Телеграм и это легко узнать....
