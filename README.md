@@ -15,3 +15,5 @@
 * **ОСИНТ-расследование:** [Деанон создателя на базе найденной связи с доменом и утекшим войсам](https://github.com/RazdoruNET/KILL_SCAMERS/blob/main/OSINT.md)
 * **Технический анализ:** [Описание связей между доменами](https://github.com/RazdoruNET/KILL_SCAMERS/blob/main/Target_Relationship_Analysis.md)
 
+
+Мне что б не просрать - https://github.com/mmaideveloper/aijurisdictionagents
