@@ -16,5 +16,5 @@
 * **Технический анализ:** [Описание связей между доменами](https://github.com/RazdoruNET/KILL_SCAMERS/blob/main/Target_Relationship_Analysis.md)
 
 
-https://www.jsdelivr.com/ - это free CDN for open source projects а значит где то есть открытая репа с кодом....
-роут /admin идет мимо приложения отрабатывая на уровне nginx
+* https://www.jsdelivr.com/ - это free CDN for open source projects а значит где то есть открытая репа с кодом....
+* роут /admin идет мимо приложения отрабатывая на уровне nginx
