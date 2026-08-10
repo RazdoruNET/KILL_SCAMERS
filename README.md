@@ -15,9 +15,3 @@
 * **ОСИНТ-расследование:** [Деанон создателя на базе найденной связи с доменом и утекшим войсам](https://github.com/RazdoruNET/KILL_SCAMERS/blob/main/OSINT.md)
 * **Технический анализ:** [Описание связей между доменами](https://github.com/RazdoruNET/KILL_SCAMERS/blob/main/Target_Relationship_Analysis.md)
 
-
-* https://www.jsdelivr.com/ - это free CDN for open source projects а значит где то есть открытая репа с кодом....
-
-## Список git users на изучение
-* dailymoodua-lab 
-* BestSherif 
