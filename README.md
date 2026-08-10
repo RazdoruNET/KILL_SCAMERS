@@ -18,6 +18,6 @@
 
 * https://www.jsdelivr.com/ - это free CDN for open source projects а значит где то есть открытая репа с кодом....
 
-Список на изучение
-dailymoodua-lab 
-BestSherif 
+## Список git users на изучение
+* dailymoodua-lab 
+* BestSherif 
