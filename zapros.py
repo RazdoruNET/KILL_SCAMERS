@@ -22,8 +22,8 @@ from aiohttp_socks import ProxyConnector
 TARGET_URL = "https://avto-trak.com/api/leads" 
 
 TOTAL_REQUESTS = 500000000000       # Общее количество запросов
-DELAY_BETWEEN_REQ = 1      # Пауза перед отправкой следующего запроса в рамках воркера
-MAX_CONCURRENT = 30     # Количество параллельных воркеров (потоков)
+DELAY_BETWEEN_REQ = 3      # Пауза перед отправкой следующего запроса в рамках воркера
+MAX_CONCURRENT = 10     # Количество параллельных воркеров (потоков)
 
 init(autoreset=True)
 
