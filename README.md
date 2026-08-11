@@ -16,4 +16,8 @@
 * **Технический анализ:** [Описание связей между доменами](https://github.com/RazdoruNET/KILL_SCAMERS/blob/main/Target_Relationship_Analysis.md)
 
 
-Мне что б не просрать - https://github.com/mmaideveloper/aijurisdictionagents
+## ЗАВТРА НА АНАЛЗ КОДА
+* https://github.com/mmaideveloper/aijurisdictionagents
+* https://github.com/Selt3Z/WerkonWebServicesRatchet
+* https://github.com/alexanderjwoods/EVN
+* https://github.com/elricco/harness-template/
