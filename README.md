@@ -35,7 +35,8 @@
 ## ИНТЕРЕСНЫЕ ТОВАРИЩИ ПОЗЖЕ НА ИЗУЧЕНИЕ
 
 * Вот этот товарищ - https://github.com/BETEPAH42
-* И этот товарищ - https://github.com/mmaideveloper/
+* И этот товарищ - https://github.com/mmaideveloper
+* И вот этот типок - https://github.com/BestSherif (https://car-sale.by - ИЗУЧИТЬ ПРОВЕРИТЬ)
 
 И вот что то мне подсказывает что ядро фермы вот оно - https://github.com/mmaideveloper/aijurisdictionagents
 
