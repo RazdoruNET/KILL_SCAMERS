@@ -17,7 +17,11 @@
 
 
 
-Что то мне подсказывает что ядро фермы вот оно - https://github.com/mmaideveloper/aijurisdictionagents
+# ЦЕЛИ НА ЗАВТРА
+* Вот этот товарищ - https://github.com/BETEPAH42
+* И этот товарищ - https://github.com/mmaideveloper/
+
+И вот что то мне подсказывает что ядро фермы вот оно - https://github.com/mmaideveloper/aijurisdictionagents
 
 ## Вопрос:
 на его базе можно поднять искомую нами скам ферму?
