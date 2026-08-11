@@ -21,3 +21,4 @@
 * https://github.com/Selt3Z/WerkonWebServicesRatchet
 * https://github.com/alexanderjwoods/EVN
 * https://github.com/elricco/harness-template/
+* https://github.com/hoperlex/technic
